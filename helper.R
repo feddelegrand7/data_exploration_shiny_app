@@ -4,9 +4,9 @@ file_ext2 <- function(x)
   if(pos > -1L) substring(x, pos + 1L) else ""
 }
 
-char_or_fac <- function(x) is.character(x) || is.factor(x)
+non_num <- function(x) !is.numeric(x)
 
-category.vars <- function(cn, dat) cn[map_lgl(dat, char_or_fac)]
+category.vars <- function(cn, dat) cn[map_lgl(dat, non_num)]
 
 zipped <- function(...)
 {
@@ -44,7 +44,7 @@ read_my_file <- function(fp)
 count_unique <- function(vars, dat)
 {
   vars <- vars[vars %in% colnames(dat)]
-  map_int(dat[vars], function(x) if(char_or_fac(x)) length(unique(x)) else 0L)
+  map_int(dat[vars], function(x) if(non_num(x)) length(unique(x)) else 0L)
 }
 
 do_the_tableby <- function(y, x, dat)
@@ -70,10 +70,18 @@ PLOTTYPES <- c("Scatter Plot" = "geom_point",
                "Boxplot" = "geom_boxplot",
                "Line Plot" = "geom_line")
 
-do_the_ggplot <- function(..., facet, type, dat)
+SCALETYPES <- function(a)
+{
+  out <- paste0("scale_", a, "_", c("log10", "sqrt", "reverse"))
+  names(out) <- c("Log10", "Square Root", "Reverse")
+  c("(No Transformation)" = " ", out)
+}
+
+do_the_ggplot <- function(..., facet, type, scale_y, scale_x, dat)
 {
   args <- list(...)
   FUN <- match.fun(type)
+
   if((args$y == " " && type != "geom_histogram") || args$x == " ")
   {
     return(list(text = "Please select x- and y-variables."))
@@ -82,7 +90,7 @@ do_the_ggplot <- function(..., facet, type, dat)
     if(type == "geom_histogram")
     {
       args$y <- NULL
-      if(char_or_fac(dat[[args$x]]))
+      if(non_num(dat[[args$x]]))
       {
         return(list(text = "Sorry, histograms require a continuous x-variable!"))
       }
@@ -93,7 +101,18 @@ do_the_ggplot <- function(..., facet, type, dat)
     p <- ggplot(dat, do.call(aes_string, args)) +
       FUN()
     if(facet != " ") p <- p + facet_wrap(formulize("", facet))
-    return(list(plot = p))
+
+    txt <- NULL
+    if(scale_y != " " && non_num(dat[[args$y]]))
+    {
+      txt <- "Scale transformations can't be used on non-numeric data!"
+    } else if(scale_y != " ") p <- p + (match.fun(scale_y))()
+    if(scale_x != " " && non_num(dat[[args$x]]))
+    {
+      txt <- "Scale transformations can't be used on non-numeric data!"
+    } else if(scale_x != " ") p <- p + (match.fun(scale_x))()
+
+    return(list(plot = p, text = txt))
   }
 }
 

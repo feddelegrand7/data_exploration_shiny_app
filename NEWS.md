@@ -8,6 +8,8 @@ News and Updates for this Shiny App:
 
 - Added data table tab. (#2)
 
+- Added options to transform x- and y-scales. (#6)
+
 # v1.0.1, 10/12/2017
 
 - Fixed reading in of `.tsv` and `.txt` files.

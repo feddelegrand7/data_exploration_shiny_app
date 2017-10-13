@@ -33,20 +33,25 @@ ui <- fluidPage(
         ),
         tabPanel("Plotting",
           fluidRow(
-            column(4,
+            column(3,
               selectInput("ggplot.y", "Y-Variable", choices = " ", multiple = FALSE, selectize = FALSE),
               selectInput("ggplot.x", "X-Variable", choices = " ", multiple = FALSE, selectize = FALSE)
             ),
-            column(4,
+            column(3,
               selectInput("ggplot.plottype", "Plot Type", choices = PLOTTYPES, multiple = FALSE, selectize = FALSE),
               selectInput("ggplot.facet", "By-Variable", choices = " ", multiple = FALSE, selectize = FALSE)
             ),
-            column(4,
+            column(3,
               selectInput("ggplot.color", "Color", choices = " ", multiple = FALSE, selectize = FALSE),
               selectInput("ggplot.fill", "Fill", choices = " ", multiple = FALSE, selectize = FALSE)
+            ),
+            column(3,
+              selectInput("ggplot.scale_y", "Y-Scale Transformation", choices = SCALETYPES("y"), multiple = FALSE, selectize = FALSE),
+              selectInput("ggplot.scale_x", "X-Scale Transformation", choices = SCALETYPES("x"), multiple = FALSE, selectize = FALSE)
             )
           ),
-          fluidRow(column(12, uiOutput("ggplot")))
+          htmlOutput("ggplottext"),
+          plotOutput("ggplotplot")
         ),
         tabPanel("Survival Analysis",
           fluidRow(
@@ -86,17 +91,22 @@ server <- function(input, output, session) {
   ################## Update all dropdowns across the app ##################
 
   observeEvent(columnNames(), {
-    cn <- c(" ", columnNames())
-    updateSelectInput(session, "tableby.y", choices = cn)
-    updateSelectInput(session, "tableby.x", choices = cn)
-    updateSelectInput(session, "ggplot.y", choices = cn)
-    updateSelectInput(session, "ggplot.x", choices = cn)
-    updateSelectInput(session, "ggplot.facet", choices = cn)
-    updateSelectInput(session, "ggplot.color", choices = cn)
-    updateSelectInput(session, "ggplot.fill", choices = cn)
-    updateSelectInput(session, "surv.time", choices = cn)
-    updateSelectInput(session, "surv.event", choices = cn)
-    updateSelectInput(session, "surv.x", choices = cn)
+    cn <- function(a = NULL)
+    {
+      out <- c(" ", columnNames())
+      if(!is.null(a)) names(out) <- c(a, out[-1])
+      out
+    }
+    updateSelectInput(session, "tableby.y", choices = cn())
+    updateSelectInput(session, "tableby.x", choices = cn())
+    updateSelectInput(session, "ggplot.y", choices = cn())
+    updateSelectInput(session, "ggplot.x", choices = cn())
+    updateSelectInput(session, "ggplot.facet", choices = cn("(No By-Variable)"))
+    updateSelectInput(session, "ggplot.color", choices = cn("(No Color)"))
+    updateSelectInput(session, "ggplot.fill", choices = cn("(No Fill)"))
+    updateSelectInput(session, "surv.time", choices = cn())
+    updateSelectInput(session, "surv.event", choices = cn("(All Events)"))
+    updateSelectInput(session, "surv.x", choices = cn("(No X-Variables)"))
   })
 
   ################## Update side nav ##################
@@ -128,16 +138,15 @@ server <- function(input, output, session) {
       color = input$ggplot.color,
       fill = input$ggplot.fill,
       facet = input$ggplot.facet,
+      scale_y = input$ggplot.scale_y,
+      scale_x = input$ggplot.scale_x,
       type = input$ggplot.plottype,
       dat = isolate(inputData())
     )
   })
 
-  output$ggplot <- renderUI({
-    if(is.null(did_the_ggplot()$p)) htmlOutput("ggplottext") else plotOutput("ggplotplot")
-  })
-
   output$ggplottext <- renderUI({
+    print(did_the_ggplot()$text)
     div(did_the_ggplot()$text, style = "color:red;")
   })
 
