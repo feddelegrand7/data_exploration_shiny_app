@@ -20,6 +20,9 @@ ui <- fluidPage(
     ),
     mainPanel(
       tabsetPanel(
+        tabPanel("Data Viewer",
+          dataTableOutput("datatable")
+        ),
         tabPanel("Summary Statistics",
           fluidRow(
             column(4, selectInput("tableby.y", "By-Variable", choices = " ", multiple = FALSE, selectize = FALSE)),
@@ -102,6 +105,12 @@ server <- function(input, output, session) {
     dat <- inputData()
     paste0("File of extension '", attr(dat, "extension"), "' detected: ",
            nrow(dat), " rows and ", ncol(dat), " columns.")
+  })
+
+  ################## Update data viewer tab ##################
+
+  output$datatable <- renderDataTable({
+    inputData()
   })
 
   ################## Update summary statistics tab ##################
