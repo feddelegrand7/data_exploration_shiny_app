@@ -6,6 +6,9 @@ library(survival)
 library(ggfortify)
 source("helper.R")
 
+# increase max upload file size
+options(shiny.maxRequestSize = 10*1024^2)
+
 ui <- fluidPage(
   titlePanel("Basic Data Exploration App"),
   sidebarLayout(

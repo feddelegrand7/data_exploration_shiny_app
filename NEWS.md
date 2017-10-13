@@ -2,7 +2,9 @@ News and Updates for this Shiny App:
 
 # v1.0.2, ...
 
-- Added "Use sample dataset" button.
+- Added "Use sample dataset" button. (#3)
+
+- Increased the maximum file size to 10 MB. (#4)
 
 # v1.0.1, 10/12/2017
 
