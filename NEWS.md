@@ -1,5 +1,9 @@
 News and Updates for this Shiny App:
 
+# v1.0.2, ...
+
+- Added "Use sample dataset" button.
+
 # v1.0.1, 10/12/2017
 
 - Fixed reading in of `.tsv` and `.txt` files.

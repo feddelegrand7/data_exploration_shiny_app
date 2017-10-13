@@ -11,7 +11,8 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       width = 3,
-      fileInput("inputfile", "Upload Dataset...", multiple = FALSE),
+      actionButton("mockstudy", "Use sample dataset..."),
+      fileInput("inputfile", NULL, buttonLabel = "...or upload a dataset", multiple = FALSE),
       textOutput("inputfiletext")
     ),
     mainPanel(
@@ -54,16 +55,27 @@ ui <- fluidPage(
   )
 )
 
-# Define server logic required to draw a histogram
 server <- function(input, output, session) {
 
-  inputData <- eventReactive(input$inputfile, {
-    read_my_file(input$inputfile$datapath)
+  # This allows you to toggle back and forth between uploaded data and mockstudy
+  whichData <- reactiveValues(inputDat = NULL, mockStud = 0, fp = NULL)
+
+  observeEvent(list(input$inputfile, input$mockstudy), {
+    if(!identical(input$inputfile$datapath, whichData$inputDat))
+    {
+      whichData$fp <- input$inputfile$datapath
+      whichData$inputDat <- input$inputfile$datapath
+    } else if(input$mockstudy != whichData$mockStud)
+    {
+      whichData$fp <- "data/mockstudy.csv"
+      whichData$mockStud <- input$mockstudy
+    }
   })
 
-  columnNames <- reactive({
-    colnames(inputData())
-  })
+  # eventReactive avoids it being called when the app loads
+  inputData <- eventReactive(whichData$fp,  read_my_file(whichData$fp))
+
+  columnNames <- reactive(colnames(inputData()))
 
   ################## Update all dropdowns across the app ##################
 
