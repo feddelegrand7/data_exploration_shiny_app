@@ -6,8 +6,6 @@ file_ext2 <- function(x)
 
 non_num <- function(x) !is.numeric(x)
 
-category.vars <- function(cn, dat) cn[map_lgl(dat, non_num)]
-
 zipped <- function(...)
 {
   unlist(lapply(list(...), paste0, c("", ".gz", ".bz2", ".xz", ".zip")))
@@ -44,23 +42,28 @@ read_my_file <- function(fp)
 count_unique <- function(vars, dat)
 {
   vars <- vars[vars %in% colnames(dat)]
-  map_int(dat[vars], function(x) if(non_num(x)) length(unique(x)) else 0L)
+  map_int(dat[vars], function(x) length(unique(x)))
 }
 
 do_the_tableby <- function(y, x, dat)
 {
   x <- x[x != " "]
-  if(is.null(dat) || length(y) * length(x) * nrow(dat) == 0 || !is.character(y) || !is.character(x))
+  tab <- NULL
+  txt <- NULL
+  if(is.null(dat) || length(y) * length(x) * nrow(dat) == 0)
   {
-    cat("")
-  } else if(any(count_unique(c(y, x), dat) > 20))
+    txt <- "Please select x-variable(s) and (optionally) a by-variable."
+  } else if(y != " " && count_unique(y, dat) > 20)
   {
-    cat("Sorry, this app only supports categorical variables with <= 20 levels.")
+    txt <- "This tab only supports by-variables with <= 20 unique levels."
+  } else if(identical(y, x))
+  {
+    txt <- "Sorry, the x-variables and by-variable can't be identical."
   } else
   {
-    summary(tableby(formulize(y, x[x != " "]), data = dat), text = TRUE)
+    tab <- tableby(formulize(y, x), data = dat)
   }
-  invisible(NULL)
+  list(table = tab, text = txt)
 }
 
 #################################################################################################################
@@ -92,7 +95,7 @@ do_the_ggplot <- function(..., facet, type, scale_y, scale_x, dat)
       args$y <- NULL
       if(non_num(dat[[args$x]]))
       {
-        return(list(text = "Sorry, histograms require a continuous x-variable!"))
+        return(list(text = "Histograms require a continuous x-variable!"))
       }
 
     }
@@ -120,11 +123,29 @@ do_the_ggplot <- function(..., facet, type, scale_y, scale_x, dat)
 
 do_the_survplot <- function(time, event, x, dat)
 {
-  if(is.null(time) || time == " ") return(NULL)
-  lhs <- paste0("Surv(", time, if(!is.null(event) && event != " ") paste0(", ", event) else "", ")")
+  if(is.null(time) || time == " ") return(list(text = "Please select a time-to-event."))
+  if(non_num(dat[[time]])) return(list(text = "Time variable is not numeric!"))
+  if(!is.null(event) && event != " ")
+  {
+    if(!all(dat[[event]] %in% c(NA, TRUE, FALSE)) &&
+       !all(dat[[event]] %in% c(NA, 0:1)) &&
+       !all(dat[[event]] %in% c(NA, 1:2))) return(list(text = "Make sure event variable is T/F, 0/1, or 1/2"))
+    lhs <- paste0("Surv(", time, ", ", event, ")")
+  } else lhs <- paste0("Surv(", time, ")")
+
   x <- x[x != " "]
-  rhs <- if(!is.null(x) && length(x) > 0) x[1] else "1"
 
-  autoplot(survfit(formulize(lhs, rhs), data = dat))
+  if(is.null(x) || length(x) == 0)
+  {
+    rhs <- "1"
+  } else if(count_unique(x, dat) > 20)
+  {
+    return(list(text = "This tab only supports x-variables with <= 20 unique levels."))
+  } else if(is.numeric(dat[[x]]))
+  {
+    dat[[x]] <- factor(dat[[x]])
+    rhs <- x
+  } else rhs <- x
+
+  return(list(plot = autoplot(survfit(formulize(lhs, rhs), data = dat))))
 }
-

@@ -10,6 +10,8 @@ News and Updates for this Shiny App:
 
 - Added options to transform x- and y-scales. (#6)
 
+- Added code to error out more graciously. (#7)
+
 # v1.0.1, 10/12/2017
 
 - Fixed reading in of `.tsv` and `.txt` files.
