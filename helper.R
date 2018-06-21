@@ -48,22 +48,12 @@ count_unique <- function(vars, dat)
 do_the_tableby <- function(y, x, dat)
 {
   x <- x[x != " "]
-  tab <- NULL
-  txt <- NULL
-  if(is.null(dat) || length(y) * length(x) * nrow(dat) == 0)
-  {
-    txt <- "Please select x-variable(s) and (optionally) a by-variable."
-  } else if(y != " " && count_unique(y, dat) > 20)
-  {
-    txt <- "This tab only supports by-variables with <= 20 unique levels."
-  } else if(identical(y, x))
-  {
-    txt <- "Sorry, the x-variables and by-variable can't be identical."
-  } else
-  {
-    tab <- tableby(formulize(y, x), data = dat)
-  }
-  list(table = tab, text = txt)
+  validate(
+    need(!is.null(dat) && length(y) * length(x) * nrow(dat) > 0, "Please select x-variable(s) and (optionally) a by-variable."),
+    need(y == " " || count_unique(y, dat) <= 20, "This tab only supports by-variables with <= 20 unique levels."),
+    need(!identical(y, x), "Sorry, the x-variables and by-variable can't be identical.")
+  )
+  tableby(formulize(y, x), data = dat)
 }
 
 #################################################################################################################
@@ -85,67 +75,51 @@ do_the_ggplot <- function(..., facet, type, scale_y, scale_x, dat)
   args <- list(...)
   FUN <- match.fun(type)
 
-  if((args$y == " " && type != "geom_histogram") || args$x == " ")
-  {
-    return(list(text = "Please select x- and y-variables."))
-  } else
-  {
-    if(type == "geom_histogram")
-    {
-      args$y <- NULL
-      if(non_num(dat[[args$x]]))
-      {
-        return(list(text = "Histograms require a continuous x-variable!"))
-      }
+  validate(
+    need((args$y != " " || type == "geom_histogram") && args$x != " ", "Please select x- and y-variables."),
+    need(type != "geom_histogram" || !non_num(dat[[args$x]]), "Histograms require a continuous x-variable!"),
+    need(scale_y == " " || !non_num(dat[[args$y]]), "Scale transformations can't be used on non-numeric data!"),
+    need(scale_x == " " || !non_num(dat[[args$x]]), "Scale transformations can't be used on non-numeric data!")
+  )
 
-    }
-    args <- args[map_lgl(args, function(x) x != " ")]
+  if(type == "geom_histogram") args$y <- NULL
 
-    p <- ggplot(dat, do.call(aes_string, args)) +
-      FUN()
-    if(facet != " ") p <- p + facet_wrap(formulize("", facet))
+  args <- args[map_lgl(args, function(x) x != " ")]
 
-    txt <- NULL
-    if(scale_y != " " && non_num(dat[[args$y]]))
-    {
-      txt <- "Scale transformations can't be used on non-numeric data!"
-    } else if(scale_y != " ") p <- p + (match.fun(scale_y))()
-    if(scale_x != " " && non_num(dat[[args$x]]))
-    {
-      txt <- "Scale transformations can't be used on non-numeric data!"
-    } else if(scale_x != " ") p <- p + (match.fun(scale_x))()
+  p <- ggplot(dat, do.call(aes_string, args)) +
+    FUN()
+  if(facet != " ") p <- p + facet_wrap(formulize("", facet))
+  if(scale_x != " ") p <- p + (match.fun(scale_x))()
 
-    return(list(plot = p, text = txt))
-  }
+  p
 }
 
 #################################################################################################################
 
 do_the_survplot <- function(time, event, x, dat)
 {
-  if(is.null(time) || time == " ") return(list(text = "Please select a time-to-event."))
-  if(non_num(dat[[time]])) return(list(text = "Time variable is not numeric!"))
-  if(!is.null(event) && event != " ")
-  {
-    if(!all(dat[[event]] %in% c(NA, TRUE, FALSE)) &&
-       !all(dat[[event]] %in% c(NA, 0:1)) &&
-       !all(dat[[event]] %in% c(NA, 1:2))) return(list(text = "Make sure event variable is T/F, 0/1, or 1/2"))
-    lhs <- paste0("Surv(", time, ", ", event, ")")
-  } else lhs <- paste0("Surv(", time, ")")
+  validate(
+    need(!is.null(time) && time != " ", "Please select a time-to-event."),
+    need(!non_num(dat[[time]]), "Time variable is not numeric!"),
+    need(is.null(event) || event == " " || all(dat[[event]] %in% c(NA, TRUE, FALSE)) ||
+           all(dat[[event]] %in% c(NA, 0:1)) || all(dat[[event]] %in% c(NA, 1:2)),
+         "Make sure event variable is T/F, 0/1, or 1/2"),
+    need(is.null(x) || length(x) == 0 || x == " " || count_unique(x, dat) <= 20,
+         "This tab only supports x-variables with <= 20 unique levels.")
+  )
+
+  lhs <- paste0("Surv(", time, if(!is.null(event) && event != " ") paste0(", ", event), ")")
 
   x <- x[x != " "]
 
   if(is.null(x) || length(x) == 0)
   {
     rhs <- "1"
-  } else if(count_unique(x, dat) > 20)
-  {
-    return(list(text = "This tab only supports x-variables with <= 20 unique levels."))
   } else if(is.numeric(dat[[x]]))
   {
     dat[[x]] <- factor(dat[[x]])
     rhs <- x
   } else rhs <- x
 
-  return(list(plot = autoplot(survfit(formulize(lhs, rhs), data = dat))))
+  autoplot(survfit(formulize(lhs, rhs), data = dat))
 }

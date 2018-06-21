@@ -31,7 +31,6 @@ ui <- fluidPage(
             column(4, selectInput("tableby.x", "X-Variables", choices = " ", multiple = TRUE, selectize = FALSE)),
             column(4)
           ),
-          htmlOutput("tablebytext"),
           verbatimTextOutput("tableby")
         ),
         tabPanel("Plotting",
@@ -53,7 +52,6 @@ ui <- fluidPage(
               selectInput("ggplot.scale_x", "X-Scale Transformation", choices = SCALETYPES("x"), multiple = FALSE, selectize = FALSE)
             )
           ),
-          htmlOutput("ggplottext"),
           plotOutput("ggplotplot")
         ),
         tabPanel("Survival Analysis",
@@ -62,7 +60,6 @@ ui <- fluidPage(
             column(4, selectInput("surv.event", "Follow-Up Status", choices = " ", multiple = FALSE, selectize = FALSE)),
             column(4, selectInput("surv.x", "X-Variables", choices = " ", multiple = FALSE, selectize = FALSE))
           ),
-          htmlOutput("survtext"),
           plotOutput("survplot")
         )
       )
@@ -129,24 +126,13 @@ server <- function(input, output, session) {
 
   ################## Update summary statistics tab ##################
 
-  did_the_tableby <- reactive({
-    do_the_tableby(input$tableby.y, input$tableby.x, isolate(inputData()))
-  })
-
-  output$tablebytext <- renderUI({
-    div(did_the_tableby()$text, style = "color:red;")
-  })
-
   output$tableby <- renderPrint({
-    if(is.null(did_the_tableby()$table))
-    {
-      cat("")
-    } else summary(did_the_tableby()$table, text = TRUE)
+    summary(do_the_tableby(input$tableby.y, input$tableby.x, isolate(inputData())), text = TRUE)
   })
 
   ################## Update plotting tab ##################
 
-  did_the_ggplot <- reactive({
+  output$ggplotplot <- renderPlot({
     do_the_ggplot(
       y = input$ggplot.y,
       x = input$ggplot.x,
@@ -160,31 +146,15 @@ server <- function(input, output, session) {
     )
   })
 
-  output$ggplottext <- renderUI({
-    div(did_the_ggplot()$text, style = "color:red;")
-  })
-
-  output$ggplotplot <- renderPlot({
-    did_the_ggplot()$plot
-  })
-
   ################## Update survival tab ##################
 
-  did_the_survplot <- reactive({
+  output$survplot <- renderPlot({
     do_the_survplot(
       input$surv.time,
       input$surv.event,
       input$surv.x,
       isolate(inputData())
     )
-  })
-
-  output$survtext <- renderUI({
-    div(did_the_survplot()$text, style = "color:red;")
-  })
-
-  output$survplot <- renderPlot({
-    did_the_survplot()$plot
   })
 }
 

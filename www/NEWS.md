@@ -1,5 +1,9 @@
 News and Updates for this Shiny App:
 
+# v1.0.3, 06/21/2018
+
+- Updated the error handling to use `shiny::validate()`. (#14)
+
 # v1.0.2, 10/16/2017
 
 - Added "Use sample dataset" button. (#3)
