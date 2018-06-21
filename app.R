@@ -31,7 +31,6 @@ ui <- fluidPage(
             column(4, selectInput("tableby.x", "X-Variables", choices = " ", multiple = TRUE, selectize = FALSE)),
             column(4)
           ),
-          htmlOutput("tablebytext"),
           verbatimTextOutput("tableby")
         ),
         tabPanel("Plotting",
@@ -129,19 +128,8 @@ server <- function(input, output, session) {
 
   ################## Update summary statistics tab ##################
 
-  did_the_tableby <- reactive({
-    do_the_tableby(input$tableby.y, input$tableby.x, isolate(inputData()))
-  })
-
-  output$tablebytext <- renderUI({
-    div(did_the_tableby()$text, style = "color:red;")
-  })
-
   output$tableby <- renderPrint({
-    if(is.null(did_the_tableby()$table))
-    {
-      cat("")
-    } else summary(did_the_tableby()$table, text = TRUE)
+    summary(do_the_tableby(input$tableby.y, input$tableby.x, isolate(inputData())), text = TRUE)
   })
 
   ################## Update plotting tab ##################

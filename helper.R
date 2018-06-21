@@ -48,22 +48,12 @@ count_unique <- function(vars, dat)
 do_the_tableby <- function(y, x, dat)
 {
   x <- x[x != " "]
-  tab <- NULL
-  txt <- NULL
-  if(is.null(dat) || length(y) * length(x) * nrow(dat) == 0)
-  {
-    txt <- "Please select x-variable(s) and (optionally) a by-variable."
-  } else if(y != " " && count_unique(y, dat) > 20)
-  {
-    txt <- "This tab only supports by-variables with <= 20 unique levels."
-  } else if(identical(y, x))
-  {
-    txt <- "Sorry, the x-variables and by-variable can't be identical."
-  } else
-  {
-    tab <- tableby(formulize(y, x), data = dat)
-  }
-  list(table = tab, text = txt)
+  validate(
+    need(!is.null(dat) && length(y) * length(x) * nrow(dat) > 0, "Please select x-variable(s) and (optionally) a by-variable."),
+    need(y == " " || count_unique(y, dat) <= 20, "This tab only supports by-variables with <= 20 unique levels."),
+    need(!identical(y, x), "Sorry, the x-variables and by-variable can't be identical.")
+  )
+  tableby(formulize(y, x), data = dat)
 }
 
 #################################################################################################################
