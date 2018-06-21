@@ -53,7 +53,7 @@ do_the_tableby <- function(y, x, dat)
     need(y == " " || count_unique(y, dat) <= 20, "This tab only supports by-variables with <= 20 unique levels."),
     need(!identical(y, x), "Sorry, the x-variables and by-variable can't be identical.")
   )
-  tableby(formulize(y, x), data = dat)
+  as.data.frame(summary(tableby(formulize(y, x), data = dat), text = TRUE))
 }
 
 #################################################################################################################
