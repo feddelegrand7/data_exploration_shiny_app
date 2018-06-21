@@ -98,29 +98,28 @@ do_the_ggplot <- function(..., facet, type, scale_y, scale_x, dat)
 
 do_the_survplot <- function(time, event, x, dat)
 {
-  if(is.null(time) || time == " ") return(list(text = "Please select a time-to-event."))
-  if(non_num(dat[[time]])) return(list(text = "Time variable is not numeric!"))
-  if(!is.null(event) && event != " ")
-  {
-    if(!all(dat[[event]] %in% c(NA, TRUE, FALSE)) &&
-       !all(dat[[event]] %in% c(NA, 0:1)) &&
-       !all(dat[[event]] %in% c(NA, 1:2))) return(list(text = "Make sure event variable is T/F, 0/1, or 1/2"))
-    lhs <- paste0("Surv(", time, ", ", event, ")")
-  } else lhs <- paste0("Surv(", time, ")")
+  validate(
+    need(!is.null(time) && time != " ", "Please select a time-to-event."),
+    need(!non_num(dat[[time]]), "Time variable is not numeric!"),
+    need(is.null(event) || event == " " || all(dat[[event]] %in% c(NA, TRUE, FALSE)) ||
+           all(dat[[event]] %in% c(NA, 0:1)) || all(dat[[event]] %in% c(NA, 1:2)),
+         "Make sure event variable is T/F, 0/1, or 1/2"),
+    need(is.null(x) || length(x) == 0 || x == " " || count_unique(x, dat) <= 20,
+         "This tab only supports x-variables with <= 20 unique levels.")
+  )
+
+  lhs <- paste0("Surv(", time, if(!is.null(event) && event != " ") paste0(", ", event), ")")
 
   x <- x[x != " "]
 
   if(is.null(x) || length(x) == 0)
   {
     rhs <- "1"
-  } else if(count_unique(x, dat) > 20)
-  {
-    return(list(text = "This tab only supports x-variables with <= 20 unique levels."))
   } else if(is.numeric(dat[[x]]))
   {
     dat[[x]] <- factor(dat[[x]])
     rhs <- x
   } else rhs <- x
 
-  return(list(plot = autoplot(survfit(formulize(lhs, rhs), data = dat))))
+  autoplot(survfit(formulize(lhs, rhs), data = dat))
 }

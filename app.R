@@ -60,7 +60,6 @@ ui <- fluidPage(
             column(4, selectInput("surv.event", "Follow-Up Status", choices = " ", multiple = FALSE, selectize = FALSE)),
             column(4, selectInput("surv.x", "X-Variables", choices = " ", multiple = FALSE, selectize = FALSE))
           ),
-          htmlOutput("survtext"),
           plotOutput("survplot")
         )
       )
@@ -149,21 +148,13 @@ server <- function(input, output, session) {
 
   ################## Update survival tab ##################
 
-  did_the_survplot <- reactive({
+  output$survplot <- renderPlot({
     do_the_survplot(
       input$surv.time,
       input$surv.event,
       input$surv.x,
       isolate(inputData())
     )
-  })
-
-  output$survtext <- renderUI({
-    div(did_the_survplot()$text, style = "color:red;")
-  })
-
-  output$survplot <- renderPlot({
-    did_the_survplot()$plot
   })
 }
 
