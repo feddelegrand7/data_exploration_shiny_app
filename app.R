@@ -52,7 +52,6 @@ ui <- fluidPage(
               selectInput("ggplot.scale_x", "X-Scale Transformation", choices = SCALETYPES("x"), multiple = FALSE, selectize = FALSE)
             )
           ),
-          htmlOutput("ggplottext"),
           plotOutput("ggplotplot")
         ),
         tabPanel("Survival Analysis",
@@ -134,7 +133,7 @@ server <- function(input, output, session) {
 
   ################## Update plotting tab ##################
 
-  did_the_ggplot <- reactive({
+  output$ggplotplot <- renderPlot({
     do_the_ggplot(
       y = input$ggplot.y,
       x = input$ggplot.x,
@@ -146,14 +145,6 @@ server <- function(input, output, session) {
       type = input$ggplot.plottype,
       dat = isolate(inputData())
     )
-  })
-
-  output$ggplottext <- renderUI({
-    div(did_the_ggplot()$text, style = "color:red;")
-  })
-
-  output$ggplotplot <- renderPlot({
-    did_the_ggplot()$plot
   })
 
   ################## Update survival tab ##################

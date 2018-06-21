@@ -75,38 +75,23 @@ do_the_ggplot <- function(..., facet, type, scale_y, scale_x, dat)
   args <- list(...)
   FUN <- match.fun(type)
 
-  if((args$y == " " && type != "geom_histogram") || args$x == " ")
-  {
-    return(list(text = "Please select x- and y-variables."))
-  } else
-  {
-    if(type == "geom_histogram")
-    {
-      args$y <- NULL
-      if(non_num(dat[[args$x]]))
-      {
-        return(list(text = "Histograms require a continuous x-variable!"))
-      }
+  validate(
+    need((args$y != " " || type == "geom_histogram") && args$x != " ", "Please select x- and y-variables."),
+    need(type != "geom_histogram" || !non_num(dat[[args$x]]), "Histograms require a continuous x-variable!"),
+    need(scale_y == " " || !non_num(dat[[args$y]]), "Scale transformations can't be used on non-numeric data!"),
+    need(scale_x == " " || !non_num(dat[[args$x]]), "Scale transformations can't be used on non-numeric data!")
+  )
 
-    }
-    args <- args[map_lgl(args, function(x) x != " ")]
+  if(type == "geom_histogram") args$y <- NULL
 
-    p <- ggplot(dat, do.call(aes_string, args)) +
-      FUN()
-    if(facet != " ") p <- p + facet_wrap(formulize("", facet))
+  args <- args[map_lgl(args, function(x) x != " ")]
 
-    txt <- NULL
-    if(scale_y != " " && non_num(dat[[args$y]]))
-    {
-      txt <- "Scale transformations can't be used on non-numeric data!"
-    } else if(scale_y != " ") p <- p + (match.fun(scale_y))()
-    if(scale_x != " " && non_num(dat[[args$x]]))
-    {
-      txt <- "Scale transformations can't be used on non-numeric data!"
-    } else if(scale_x != " ") p <- p + (match.fun(scale_x))()
+  p <- ggplot(dat, do.call(aes_string, args)) +
+    FUN()
+  if(facet != " ") p <- p + facet_wrap(formulize("", facet))
+  if(scale_x != " ") p <- p + (match.fun(scale_x))()
 
-    return(list(plot = p, text = txt))
-  }
+  p
 }
 
 #################################################################################################################
