@@ -1,5 +1,12 @@
-Package: DataExplorationApp
 Title: Data Exploration App
+URL: data_exploration
 Version: 1.0.3
 Date: 2018-06-21
+Description: A point-and-click GUI to perform basic data exploration,
+    leveraging the reporting capabilities of the `arsenal` package and the plotting capabilities of the
+    `ggplot2` package.
+Authors@R: c(
+    person("Ethan", "Heinzen", email = "heinzen.ethan@mayo.edu", role = c("aut", "cre"))
+  )
+Depends: R (>= 3.4.2)
 Type: App
