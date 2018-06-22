@@ -4,6 +4,8 @@ News and Updates for this Shiny App:
 
 - Updated the error handling to use `shiny::validate()`. (#14)
 
+- Made `tableby()` output prettier.
+
 # v1.0.2, 10/16/2017
 
 - Added "Use sample dataset" button. (#3)
