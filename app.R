@@ -22,10 +22,12 @@ ui <- fluidPage(
     ),
     mainPanel(
       tabsetPanel(
-        tabPanel("Data Viewer",
+        tabPanel(
+          "Data Viewer",
           dataTableOutput("datatable")
         ),
-        tabPanel("Summary Statistics",
+        tabPanel(
+          "Summary Statistics",
           fluidRow(
             column(4, selectInput("tableby.y", "By-Variable", choices = " ", multiple = FALSE, selectize = FALSE)),
             column(4, selectInput("tableby.x", "X-Variables", choices = " ", multiple = TRUE, selectize = FALSE)),
@@ -33,28 +35,34 @@ ui <- fluidPage(
           ),
           tableOutput("tableby")
         ),
-        tabPanel("Plotting",
+        tabPanel(
+          "Plotting",
           fluidRow(
-            column(3,
+            column(
+              3,
               selectInput("ggplot.y", "Y-Variable", choices = " ", multiple = FALSE, selectize = FALSE),
               selectInput("ggplot.x", "X-Variable", choices = " ", multiple = FALSE, selectize = FALSE)
             ),
-            column(3,
+            column(
+              3,
               selectInput("ggplot.plottype", "Plot Type", choices = PLOTTYPES, multiple = FALSE, selectize = FALSE),
               selectInput("ggplot.facet", "By-Variable", choices = " ", multiple = FALSE, selectize = FALSE)
             ),
-            column(3,
+            column(
+              3,
               selectInput("ggplot.color", "Color", choices = " ", multiple = FALSE, selectize = FALSE),
               selectInput("ggplot.fill", "Fill", choices = " ", multiple = FALSE, selectize = FALSE)
             ),
-            column(3,
+            column(
+              3,
               selectInput("ggplot.scale_y", "Y-Scale Transformation", choices = SCALETYPES("y"), multiple = FALSE, selectize = FALSE),
               selectInput("ggplot.scale_x", "X-Scale Transformation", choices = SCALETYPES("x"), multiple = FALSE, selectize = FALSE)
             )
           ),
           plotOutput("ggplotplot")
         ),
-        tabPanel("Survival Analysis",
+        tabPanel(
+          "Survival Analysis",
           fluidRow(
             column(4, selectInput("surv.time", "Follow-Up Time", choices = " ", multiple = FALSE, selectize = FALSE)),
             column(4, selectInput("surv.event", "Follow-Up Status", choices = " ", multiple = FALSE, selectize = FALSE)),
