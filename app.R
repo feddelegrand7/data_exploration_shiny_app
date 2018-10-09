@@ -156,12 +156,20 @@ server <- function(input, output, session) {
 
   ################## Update data quality tab ##################
 
+  univ.tab <- reactive({
+    univariate(inputData())
+  })
+
   output$univ.table <- renderTable({
-    head(univariate(inputData()), input$nshow1)
+    head(univ.tab(), input$nshow1)
+  })
+
+  pair.tab <- reactive({
+    pairwise(inputData())
   })
 
   output$pair.table <- renderTable({
-    head(pairwise(inputData()), input$nshow2)
+    head(pair.tab(), input$nshow2)
   })
 
   ################## Update plotting tab ##################
