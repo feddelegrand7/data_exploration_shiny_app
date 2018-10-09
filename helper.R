@@ -123,3 +123,9 @@ do_the_survplot <- function(time, event, x, dat)
 
   autoplot(survfit(formulize(lhs, rhs), data = dat))
 }
+
+#################################################################################################################
+
+is.numericish <- function(x) is.numeric(x) || inherits(x, "difftime") || is.Date(x)
+source("R/univariate.R")
+source("R/pairwise.R")

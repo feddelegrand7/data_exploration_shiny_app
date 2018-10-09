@@ -36,6 +36,22 @@ ui <- fluidPage(
           tableOutput("tableby")
         ),
         tabPanel(
+          "Data Quality",
+          tags$br(),
+          tabsetPanel(
+            tabPanel(
+              "Univariate",
+              fluidRow(numericInput("nshow1", "N Records to Show:", value = 10)),
+              fluidRow(tableOutput("univ.table"))
+            ),
+            tabPanel(
+              "Pairwise",
+              fluidRow(numericInput("nshow2", "N Records to Show:", value = 10)),
+              fluidRow(tableOutput("pair.table"))
+            )
+          )
+        ),
+        tabPanel(
           "Plotting",
           fluidRow(
             column(
@@ -136,6 +152,16 @@ server <- function(input, output, session) {
 
   output$tableby <- renderTable({
     do_the_tableby(input$tableby.y, input$tableby.x, isolate(inputData()))
+  })
+
+  ################## Update data quality tab ##################
+
+  output$univ.table <- renderTable({
+    head(univariate(inputData()), input$nshow1)
+  })
+
+  output$pair.table <- renderTable({
+    head(pairwise(inputData()), input$nshow2)
   })
 
   ################## Update plotting tab ##################
