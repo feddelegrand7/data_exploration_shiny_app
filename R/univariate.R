@@ -14,6 +14,8 @@ calc_outlier <- function(x, cutoff = 0.01, nlevels.to.factor = 10)
   }
 }
 
+source("R/test_trend.R")
+
 univariate <- function(dat)
 {
   ## Calculate missings (counts and percents)
@@ -34,7 +36,8 @@ univariate <- function(dat)
     missings = paste0(names(nmiss), " (", nmiss, ", ", round(100*pct.miss, 1), "%)"),
     skewness = paste0(names(skew), " (", round(skew, 3), ")"),
     excess.kurt = paste0(names(kurt), " (", round(kurt, 3), ")"),
-    outliers = paste0(names(outliers), " (", outliers, ", ", round(100*pct_outliers, 1), "%)")
+    outliers = paste0(names(outliers), " (", outliers, ", ", round(100*pct_outliers, 1), "%)"),
+    trend.test = trend.test(dat, 100)
   )
 }
 
