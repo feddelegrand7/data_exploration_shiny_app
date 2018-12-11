@@ -47,7 +47,10 @@ ui <- fluidPage(
             tabPanel(
               "Pairwise",
               fluidRow(numericInput("nshow2", "N Records to Show:", value = 10)),
-              fluidRow(tableOutput("pair.table"))
+              fluidRow(tableOutput("pair.table")),
+              fluidRow("Effective Number of Variables:"),
+              fluidRow(tableOutput("pca.table")),
+              fluidRow(plotOutput("pca.screeplot"))
             )
           )
         ),
@@ -172,6 +175,29 @@ server <- function(input, output, session) {
     head(pair.tab(), input$nshow2)
   })
 
+  pcas <- reactive({
+    tmp <- get_eigen(inputData())
+    cumsum(tmp)/sum(tmp)
+
+  })
+
+  output$pca.table <- renderTable({
+    cuts <- c(0.95, 0.975, 0.99)
+    eig <- pcas()
+    out <- lapply(cuts, function(cutoff) {
+      min(which(cutoff <= eig))
+    })
+    setNames(as.data.frame(out), paste0(cuts*100, "%"))
+  })
+
+  output$pca.screeplot <- renderPlot({
+    dat <- data.frame(x = seq_along(pcas()), y = pcas())
+    ggplot(dat, aes(x = x, y = y)) +
+      geom_line() +
+      geom_point() +
+      ggtitle("Scree Plot of PCAs") +
+      xlab("PCA") + ylab("Variance Explained")
+  })
   ################## Update plotting tab ##################
 
   output$ggplotplot <- renderPlot({
