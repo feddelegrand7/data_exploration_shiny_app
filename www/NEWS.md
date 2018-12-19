@@ -1,5 +1,9 @@
 News and Updates for this Shiny App:
 
+# v1.1.0.9000, 12/20/2018
+
+- Updated the labels on the data quality tables.
+
 # v1.1.0, 12/19/2018
 
 - Added a data quality tab.

@@ -173,7 +173,7 @@ server <- function(input, output, session) {
   })
 
   output$univ.table <- renderTable({
-    head(univ.tab(), input$nshow1)
+    head(setNames(univ.tab(), c("Missings (count, %)", "Skewness", "Excess Kurtosis", "Outliers (count, %)", "Trend Test")), input$nshow1)
   })
 
   output$univ.trendplot <- renderPlot({
@@ -185,7 +185,7 @@ server <- function(input, output, session) {
   })
 
   output$pair.table <- renderTable({
-    head(pair.tab(), input$nshow2)
+    head(setNames(pair.tab(), c("Pairwise Correlation", "Pairwise Correlation of Missings")), input$nshow2)
   })
 
   pcas <- reactive({
