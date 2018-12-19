@@ -9,11 +9,16 @@ source("helper.R")
 # increase max upload file size
 options(shiny.maxRequestSize = 10*1024^2)
 
-ui <- fluidPage(
-  titlePanel("Basic Data Exploration App"),
-  sidebarLayout(
+ui <- navbarPage(
+  theme = mayoshiny::mayoshinytheme(),
+  "Basic Data Exploration App",
+  tabPanel(
+    "Exploration",
     sidebarPanel(
-      style = "min-height: 80vh; position: relative;",
+      id = "sidebar",
+      tags$head(
+        tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+      ),
       width = 3,
       actionButton("mockstudy", "Use sample dataset..."),
       fileInput("inputfile", NULL, buttonLabel = "...or upload a dataset", multiple = FALSE),
@@ -37,7 +42,6 @@ ui <- fluidPage(
         ),
         tabPanel(
           "Data Quality",
-          tags$br(),
           tabsetPanel(
             tabPanel(
               "Univariate",
@@ -99,7 +103,9 @@ ui <- fluidPage(
         )
       )
     )
-  )
+  ),
+  tabPanel("Documentation", "This page is under development"),
+  tabPanel("DISCLAIMER", mayoshiny::disclaimer())
 )
 
 server <- function(input, output, session) {

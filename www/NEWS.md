@@ -4,6 +4,10 @@ News and Updates for this Shiny App:
 
 - Updated the labels on the data quality tables.
 
+- Added some validation to inputs.
+
+- Changed the theme to use Mayo colors.
+
 # v1.1.0, 12/19/2018
 
 - Added a data quality tab.
