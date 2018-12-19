@@ -173,6 +173,9 @@ server <- function(input, output, session) {
   })
 
   output$univ.table <- renderTable({
+    validate(
+      need(is.numeric(input$nshow1) && input$nshow1 > 0, "Please enter a number greater than 0.")
+    )
     head(setNames(univ.tab(), c("Missings (count, %)", "Skewness", "Excess Kurtosis", "Outliers (count, %)", "Trend Test")), input$nshow1)
   })
 
@@ -185,6 +188,9 @@ server <- function(input, output, session) {
   })
 
   output$pair.table <- renderTable({
+    validate(
+      need(is.numeric(input$nshow2) && input$nshow2 > 0, "Please enter a number greater than 0.")
+    )
     head(setNames(pair.tab(), c("Pairwise Correlation", "Pairwise Correlation of Missings")), input$nshow2)
   })
 
@@ -213,6 +219,9 @@ server <- function(input, output, session) {
   })
 
   by.obs.tab <- reactive({
+    validate(
+      need(nrow(inputData()) < 10000, "Sorry, this data quality metric is limited to datasets with less than 10,000 rows.")
+    )
     tmp <- data.frame(
       Observation = 1:nrow(inputData()),
       p.value = round(detect.mv.outliers.par(inputData()), 3)
@@ -221,6 +230,9 @@ server <- function(input, output, session) {
   })
 
   output$byobs.table <- renderTable({
+    validate(
+      need(is.numeric(input$nshow3) && input$nshow3 > 0, "Please enter a number greater than 0.")
+    )
     head(by.obs.tab(), input$nshow3)
   })
 
