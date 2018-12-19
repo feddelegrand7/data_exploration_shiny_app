@@ -1,4 +1,4 @@
-library("carData")
+# library("carData")
 
 library("doMC")
 registerDoMC()
@@ -138,116 +138,56 @@ detect.mv.outliers.par <- function(X){
 # detect.mv.outliers.par(XX)
 #
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-detect.mv.outliers.old <- function(X, min.unique=10){
-
-  p <- ncol(X)
-  n <- nrow(X)
-  ind.cont <- rep(FALSE, p)
-  for(j in 1:p)
-    ind.cont[j] <- !(is.factor(X[,j]) || length(unique(X[,j])) < min.unique)
-
-  X.cont <- X[,ind.cont]
-  p.cont <- ncol(X.cont)
-  muX <- apply(X.cont,2,mean, na.rm=TRUE)
-  SX <- cov(X.cont, use="complete.obs")
-  if(any(is.na(SX))){
-    SX <- cov(X.cont, use="pairwise.complete.obs")
-  }
-  foo <- try(chol(SX), silent = TRUE)
-  while(is.character(foo[1])){
-  print("blah")
-    dSX <- diag(SX)
-    SX <- .95*SX
-    diag(SX) <- dSX
-    foo <- try(chol(SX), silent = TRUE)
-  }
-  Sinv <- chol2inv(foo)
-  muX.mat <- matrix(muX, n, p.cont, byrow=TRUE)
-  eps <- as.matrix(X.cont - muX.mat)
-  v2 <- rep(0,n)
-  for(i in 1:n)
-    v2[i] <- as.numeric(t(eps[i,])%*%Sinv%*%eps[i,])
-  df <- rep(p.cont,n)
-
-  ind.na <- which(is.na(v2))
-  for(i in ind.na){
-    ind.obs.i <- which(!is.na(X.cont[i,]))
-    if(length(ind.obs.i)==0){
-      v2[i] <- NA
-      df[i] <- 0
-      next
-    }
-    Xobs.i <- X.cont[i,ind.obs.i]
-    SX.i <- SX[ind.obs.i, ind.obs.i]
-    Sinv.i <- chol2inv(chol(SX.i))
-    muX.i <- muX[ind.obs.i]
-    eps.i <- as.numeric(Xobs.i - muX.i)
-    v2[i] <- as.numeric(t(eps.i)%*%Sinv.i%*%eps.i)
-    df[i] <- length(ind.obs.i)
-  }
-  pval <- pchisq(v2, df, lower.tail=FALSE)
-  return(pval)
-}
-
-
+#
+# detect.mv.outliers.old <- function(X, min.unique=10){
+#
+#   p <- ncol(X)
+#   n <- nrow(X)
+#   ind.cont <- rep(FALSE, p)
+#   for(j in 1:p)
+#     ind.cont[j] <- !(is.factor(X[,j]) || length(unique(X[,j])) < min.unique)
+#
+#   X.cont <- X[,ind.cont]
+#   p.cont <- ncol(X.cont)
+#   muX <- apply(X.cont,2,mean, na.rm=TRUE)
+#   SX <- cov(X.cont, use="complete.obs")
+#   if(any(is.na(SX))){
+#     SX <- cov(X.cont, use="pairwise.complete.obs")
+#   }
+#   foo <- try(chol(SX), silent = TRUE)
+#   while(is.character(foo[1])){
+#   print("blah")
+#     dSX <- diag(SX)
+#     SX <- .95*SX
+#     diag(SX) <- dSX
+#     foo <- try(chol(SX), silent = TRUE)
+#   }
+#   Sinv <- chol2inv(foo)
+#   muX.mat <- matrix(muX, n, p.cont, byrow=TRUE)
+#   eps <- as.matrix(X.cont - muX.mat)
+#   v2 <- rep(0,n)
+#   for(i in 1:n)
+#     v2[i] <- as.numeric(t(eps[i,])%*%Sinv%*%eps[i,])
+#   df <- rep(p.cont,n)
+#
+#   ind.na <- which(is.na(v2))
+#   for(i in ind.na){
+#     ind.obs.i <- which(!is.na(X.cont[i,]))
+#     if(length(ind.obs.i)==0){
+#       v2[i] <- NA
+#       df[i] <- 0
+#       next
+#     }
+#     Xobs.i <- X.cont[i,ind.obs.i]
+#     SX.i <- SX[ind.obs.i, ind.obs.i]
+#     Sinv.i <- chol2inv(chol(SX.i))
+#     muX.i <- muX[ind.obs.i]
+#     eps.i <- as.numeric(Xobs.i - muX.i)
+#     v2[i] <- as.numeric(t(eps.i)%*%Sinv.i%*%eps.i)
+#     df[i] <- length(ind.obs.i)
+#   }
+#   pval <- pchisq(v2, df, lower.tail=FALSE)
+#   return(pval)
+# }
+#
+#
