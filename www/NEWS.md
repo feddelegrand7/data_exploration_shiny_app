@@ -1,5 +1,9 @@
 News and Updates for this Shiny App:
 
+# v1.1.0, 12/19/2018
+
+- Added a data quality tab.
+
 # v1.0.3, 06/21/2018
 
 - Updated the error handling to use `shiny::validate()`. (#14)
