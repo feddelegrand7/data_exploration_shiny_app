@@ -6,7 +6,7 @@ options(cores=8)
 
 
 
-trend.break <- function(x, buffer=5, max.ind=100, min.unique=10){
+trend.break <- function(x, buffer=5, max.ind=100){
 
   x <- x[!is.na(x)]
   n <- length(x)
@@ -17,7 +17,7 @@ trend.break <- function(x, buffer=5, max.ind=100, min.unique=10){
   n.ind <- length(b.ind)
   Fmax <- 0
 
-  if(is.factor(x) || length(unique(x)) < min.unique){
+  if(!is.numericish(x)){
     Fmax <- 0
     for(j in 1:n.ind){
       y <- c(rep(0, b.ind[j]), rep(1,n-b.ind[j]))

@@ -51,6 +51,11 @@ ui <- fluidPage(
               fluidRow("Effective Number of Variables:"),
               fluidRow(tableOutput("pca.table")),
               fluidRow(plotOutput("pca.screeplot"))
+            ),
+            tabPanel(
+              "By Observation",
+              fluidRow(numericInput("nshow3", "N Records to Show:", value = 10)),
+              fluidRow(tableOutput("byobs.table"))
             )
           )
         ),
@@ -198,6 +203,19 @@ server <- function(input, output, session) {
       ggtitle("Scree Plot of PCAs") +
       xlab("PCA") + ylab("Variance Explained")
   })
+
+  by.obs.tab <- reactive({
+    tmp <- data.frame(
+      Observation = 1:nrow(inputData()),
+      p.value = round(detect.mv.outliers.par(inputData()), 3)
+    )
+    tmp[order(tmp$p.value), ]
+  })
+
+  output$byobs.table <- renderTable({
+    head(by.obs.tab(), input$nshow3)
+  })
+
   ################## Update plotting tab ##################
 
   output$ggplotplot <- renderPlot({

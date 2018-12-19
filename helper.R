@@ -126,7 +126,10 @@ do_the_survplot <- function(time, event, x, dat)
 
 #################################################################################################################
 
-is.numericish <- function(x) is.numeric(x) || inherits(x, "difftime") || is.Date(x)
+MIN.UNIQUE <- 10
+is.numericish <- function(x) (is.numeric(x) || inherits(x, "difftime") || is.Date(x)) && length(unique(x)) >= MIN.UNIQUE
+source("R/test_trend.R")
 source("R/univariate.R")
+source("R/outlier_detection.R")
 source("R/pairwise.R")
 source("R/pca.R")

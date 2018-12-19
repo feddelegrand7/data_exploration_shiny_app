@@ -1,7 +1,7 @@
 
-calc_outlier <- function(x, cutoff = 0.01, nlevels.to.factor = 10)
+calc_outlier <- function(x, cutoff = 0.01)
 {
-  if(is.numericish(x) && length(unique(x)) > nlevels.to.factor)
+  if(is.numericish(x))
   {
     x <- as.numeric(x)
     mu <- mean(x, na.rm = TRUE)
@@ -13,8 +13,6 @@ calc_outlier <- function(x, cutoff = 0.01, nlevels.to.factor = 10)
     sum(table(x)[table(x)/length(x) < cutoff])
   }
 }
-
-source("R/test_trend.R")
 
 univariate <- function(dat)
 {
