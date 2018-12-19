@@ -84,15 +84,16 @@ trend.perm.test.par <- function(x, nperm=1000, buffer=5, max.ind=100){
 }
 
 
-trend.test <- function(dat, nperm = 1000, buffer = 5, max.ind = 100)
+trend.test <- function(dat, nperm = 10, buffer = 5, max.ind = 100)
 {
-  tmp <- purrr::map(dat, trend.perm.test, nperm = nperm, buffer = buffer, max.ind = max.ind)
+  tmp <- purrr::map(dat, trend.perm.test.par, nperm = nperm, buffer = buffer, max.ind = max.ind)
   pvals <- purrr::map_dbl(tmp, "pval")
-  paste0(
+  tmp <- tmp[order(pvals)]
+  arsenal::set_attr(paste0(
     names(tmp), " (Observation=",
     purrr::map_dbl(tmp, "ind.max"), ", p-value=",
-    round(pvals, 5), ")"
-  )[order(pvals)]
+    round(purrr::map_dbl(tmp, "pval"), 5), ")"
+  ), "results", tmp)
 }
 
 
@@ -111,4 +112,34 @@ trend.test <- function(dat, nperm = 1000, buffer = 5, max.ind = 100)
 # ans2 <- trend.perm.test.par(x2, nperm=1000, buffer=5, max.ind=100)
 # ans2
 #
+
+trend_plot <- function(var, dat, results)
+{
+  validate(
+    need(var != " ", "Please select a variable.")
+  )
+  stopifnot(var %in% names(dat))
+  stopifnot(var %in% names(results))
+
+  brk <- results[[var]]$ind.max
+  dat2 <- data.frame(y = dat[[var]], obs = seq_len(nrow(dat)), gp = c(rep("Before break", brk-1), rep("After break", nrow(dat) - brk + 1)))
+  if(is.numericish(dat2$y))
+  {
+    ggplot(dat2, aes(x = obs, y = y, group = gp)) +
+      geom_point() +
+      geom_smooth(method = "lm", se = FALSE, color = "red") +
+      xlab("Observation Number") + ylab(var)
+  } else
+  {
+    dat2 <- as.data.frame(table(dat2[c("gp", "y")]))
+    dat2$gp <- factor(dat2$gp, levels = c("Before break", "After break"))
+    ggplot(dat2, aes(x = gp, y = Freq, fill = y)) +
+      geom_bar(position = "fill", stat = "identity") +
+      xlab("") + ylab("Proportion") +
+      scale_fill_discrete(name = var)
+  }
+}
+
+
+
 

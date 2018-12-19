@@ -42,7 +42,10 @@ ui <- fluidPage(
             tabPanel(
               "Univariate",
               fluidRow(numericInput("nshow1", "N Records to Show:", value = 10)),
-              fluidRow(tableOutput("univ.table"))
+              fluidRow(tableOutput("univ.table")),
+              fluidRow(selectInput("univ.trendvar", "Plot Trends for", choices = " ", multiple = FALSE, selectize = FALSE)),
+              fluidRow(plotOutput("univ.trendplot"))
+
             ),
             tabPanel(
               "Pairwise",
@@ -132,6 +135,7 @@ server <- function(input, output, session) {
     }
     updateSelectInput(session, "tableby.y", choices = cn())
     updateSelectInput(session, "tableby.x", choices = cn())
+    updateSelectInput(session, "univ.trendvar", choices = cn())
     updateSelectInput(session, "ggplot.y", choices = cn())
     updateSelectInput(session, "ggplot.x", choices = cn())
     updateSelectInput(session, "ggplot.facet", choices = cn("(No By-Variable)"))
@@ -170,6 +174,10 @@ server <- function(input, output, session) {
 
   output$univ.table <- renderTable({
     head(univ.tab(), input$nshow1)
+  })
+
+  output$univ.trendplot <- renderPlot({
+    trend_plot(input$univ.trendvar, inputData(), attr(univ.tab()$trend.test, "results"))
   })
 
   pair.tab <- reactive({
