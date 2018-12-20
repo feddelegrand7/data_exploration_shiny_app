@@ -2,6 +2,8 @@ News and Updates for this Shiny App:
 
 # v1.1.0.9000, 12/20/2018
 
+- Added Q-Q plot.
+
 - Updated the labels on the data quality tables.
 
 - Added some validation to inputs.

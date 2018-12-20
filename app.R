@@ -62,7 +62,10 @@ ui <- navbarPage(
             tabPanel(
               "By Observation",
               fluidRow(numericInput("nshow3", "N Records to Show:", value = 10)),
-              fluidRow(tableOutput("byobs.table"))
+              fluidRow(
+                column(6, plotOutput("byobs.plot")),
+                column(6, tableOutput("byobs.table"))
+              )
             )
           )
         ),
@@ -230,16 +233,27 @@ server <- function(input, output, session) {
     )
     tmp <- data.frame(
       Observation = 1:nrow(inputData()),
-      p.value = round(detect.mv.outliers.par(inputData()), 3)
+      p.value = detect.mv.outliers.par(inputData())
     )
     tmp[order(tmp$p.value), ]
+  })
+
+  output$byobs.plot <- renderPlot({
+    p <- qnorm(by.obs.tab()$p.value)
+    expected <- qnorm(ppoints(nrow(by.obs.tab())))
+    ggplot(data.frame(x = expected, y = p), aes(x = x, y = y)) +
+      geom_abline(slope = 1, intercept = 0, color = "red") +
+      geom_point() +
+      xlab("Theoretical Normal Quantiles") + ylab("Normal Quantiles of P-values")
   })
 
   output$byobs.table <- renderTable({
     validate(
       need(is.numeric(input$nshow3) && input$nshow3 > 0, "Please enter a number greater than 0.")
     )
-    head(by.obs.tab(), input$nshow3)
+    tmp <- by.obs.tab()
+    tmp$p.value <- formatC(tmp$p.value, digits = 4, format = "f")
+    head(tmp, input$nshow3)
   })
 
   ################## Update plotting tab ##################
