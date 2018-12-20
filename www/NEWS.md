@@ -1,6 +1,6 @@
 News and Updates for this Shiny App:
 
-# v1.1.0.9000, 12/20/2018
+# v1.2.0, 12/20/2018
 
 - Added Q-Q plot.
 
