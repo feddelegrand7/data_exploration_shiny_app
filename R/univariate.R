@@ -31,10 +31,10 @@ univariate <- function(dat)
   pct_outliers <- outliers/nrow(dat)
 
   data.frame(
-    missings = paste0(names(nmiss), " (", nmiss, ", ", round(100*pct.miss, 1), "%)"),
-    skewness = paste0(names(skew), " (", round(skew, 3), ")"),
-    excess.kurt = paste0(names(kurt), " (", round(kurt, 3), ")"),
-    outliers = paste0(names(outliers), " (", outliers, ", ", round(100*pct_outliers, 1), "%)"),
+    missings = paste0(names(nmiss), " (", nmiss, ", ", formatC(100*pct.miss, digits = 1, format = "f"), "%)"),
+    skewness = paste0(names(skew), " (", formatC(skew, digits = 3, format = "f"), ")"),
+    excess.kurt = paste0(names(kurt), " (", formatC(kurt, digits = 3, format = "f"), ")"),
+    outliers = paste0(names(outliers), " (", outliers, ", ", formatC(100*pct_outliers, digits = 1, format = "f"), "%)"),
     trend.test = trend.test(dat, 10),
     stringsAsFactors = FALSE
   )

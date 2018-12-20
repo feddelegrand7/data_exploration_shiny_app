@@ -62,8 +62,8 @@ pairwise <- function(dat)
   correlation <- do_all_correlations(dat)
   correlation.nas <- corr_miss(dat)
   data.frame(
-    correlation = paste0(names(correlation), " (", round(correlation, 3), ")"),
-    correlation.nas = c(paste0(names(correlation.nas), " (", round(correlation.nas, 3), ")"),
+    correlation = paste0(names(correlation), " (", formatC(correlation, digits = 3, format = "f"), ")"),
+    correlation.nas = c(paste0(names(correlation.nas), " (", formatC(correlation.nas, digits = 3, format = "f"), ")"),
                         rep("", times = length(correlation) - length(correlation.nas)))
   )
 }
