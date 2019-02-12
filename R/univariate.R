@@ -14,7 +14,7 @@ calc_outlier <- function(x, cutoff = 0.01)
   }
 }
 
-univariate <- function(dat)
+univariate <- function(dat, cutoff)
 {
   ## Calculate missings (counts and percents)
   nmiss <- sort(colSums(is.na(dat)), decreasing = TRUE)
@@ -27,7 +27,7 @@ univariate <- function(dat)
   skew <- skew[order(abs(skew), decreasing = TRUE, na.last = TRUE)]
 
   ## outliers
-  outliers <- sort(purrr::map_int(dat, calc_outlier), decreasing = TRUE)
+  outliers <- sort(purrr::map_int(dat, calc_outlier, cutoff = cutoff), decreasing = TRUE)
   pct_outliers <- outliers/nrow(dat)
 
   data.frame(

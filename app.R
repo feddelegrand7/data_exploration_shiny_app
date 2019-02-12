@@ -35,8 +35,7 @@ ui <- navbarPage(
           "Summary Statistics",
           fluidRow(
             column(4, selectInput("tableby.y", "By-Variable", choices = " ", multiple = FALSE, selectize = FALSE)),
-            column(4, selectInput("tableby.x", "X-Variables", choices = " ", multiple = TRUE, selectize = FALSE)),
-            column(4)
+            column(4, selectInput("tableby.x", "X-Variables", choices = " ", multiple = TRUE, selectize = FALSE))
           ),
           tableOutput("tableby")
         ),
@@ -45,11 +44,15 @@ ui <- navbarPage(
           tabsetPanel(
             tabPanel(
               "Univariate",
-              fluidRow(numericInput("nshow1", "N Records to Show:", value = 10)),
+              fluidRow(
+                column(4, numericInput("nshow1", "N Records to Show:", value = 10)),
+                column(4, numericInput("univ.cutoff", "Outlier cutoff", value = 0.05))
+              ),
               fluidRow(tableOutput("univ.table")),
-              fluidRow(selectInput("univ.trendvar", "Plot Trends for", choices = " ", multiple = FALSE, selectize = FALSE)),
+              fluidRow(
+                column(4, selectInput("univ.trendvar", "Plot Trends for", choices = " ", multiple = FALSE, selectize = FALSE))
+              ),
               fluidRow(plotOutput("univ.trendplot"))
-
             ),
             tabPanel(
               "Pairwise",
@@ -178,7 +181,7 @@ server <- function(input, output, session) {
   ################## Update data quality tab ##################
 
   univ.tab <- reactive({
-    univariate(inputData())
+    univariate(inputData(), input$univ.cutoff)
   })
 
   output$univ.table <- renderTable({

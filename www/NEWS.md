@@ -1,5 +1,9 @@
 News and Updates for this Shiny App:
 
+# v1.2.0.9000, 02/12/2019
+
+- Added outlier cutoff to univariate tab.
+
 # v1.2.0, 12/20/2018
 
 - Added Q-Q plot.
