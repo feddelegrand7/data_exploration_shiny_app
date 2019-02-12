@@ -64,7 +64,10 @@ ui <- navbarPage(
             ),
             tabPanel(
               "By Observation",
-              fluidRow(numericInput("nshow3", "N Records to Show:", value = 10)),
+              fluidRow(
+                column(4, numericInput("nshow3", "N Records to Show:", value = 10)),
+                column(4, numericInput("byobs.cutoff", "Outlier cutoff", value = 0.05))
+              ),
               fluidRow(
                 column(6, plotOutput("byobs.plot")),
                 column(6, tableOutput("byobs.table"))
@@ -242,11 +245,13 @@ server <- function(input, output, session) {
   })
 
   output$byobs.plot <- renderPlot({
-    p <- qnorm(by.obs.tab()$p.value)
+    q <- qnorm(p <- by.obs.tab()$p.value)
     expected <- qnorm(ppoints(nrow(by.obs.tab())))
-    ggplot(data.frame(x = expected, y = p), aes(x = x, y = y)) +
+    ggplot(data.frame(x = expected, y = q, color = factor(p < input$byobs.cutoff, levels = c(FALSE, TRUE))),
+           aes(x = x, y = y, color = color)) +
       geom_abline(slope = 1, intercept = 0, color = "red") +
-      geom_point() +
+      geom_point(show.legend = FALSE) +
+      scale_color_manual(values = c("black", "red")) +
       xlab("Theoretical Normal Quantiles") + ylab("Normal Quantiles of P-values")
   })
 

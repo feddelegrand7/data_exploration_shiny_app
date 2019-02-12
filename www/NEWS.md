@@ -4,6 +4,8 @@ News and Updates for this Shiny App:
 
 - Added outlier cutoff to univariate tab.
 
+- Added outlier cutoff to by-observation tab to color significant points.
+
 # v1.2.0, 12/20/2018
 
 - Added Q-Q plot.
