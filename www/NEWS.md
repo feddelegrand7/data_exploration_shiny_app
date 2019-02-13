@@ -6,6 +6,8 @@ News and Updates for this Shiny App:
 
 - Added outlier cutoff to by-observation tab to color significant points.
 
+- Sped up multivariate outlier detection and trend test.
+
 # v1.2.0, 12/20/2018
 
 - Added Q-Q plot.
