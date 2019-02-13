@@ -4,7 +4,7 @@ library("doMC")
 registerDoMC()
 options(cores=8)
 
-
+Rcpp::sourceCpp("R/countit.cpp")
 
 trend.break <- function(x, buffer=5, max.ind=100){
 
@@ -18,15 +18,20 @@ trend.break <- function(x, buffer=5, max.ind=100){
   Fmax <- 0
 
   if(!is.numericish(x)){
-    Fmax <- 0
+    x <- as.character(x)
+    uniq <- unique(x)
+
     for(j in 1:n.ind){
-      y <- c(rep(0, b.ind[j]), rep(1,n-b.ind[j]))
-      tab <- table(y,x)
-      n <- sum(tab)
-      sr <- rowSums(tab)
-      sc <- colSums(tab)
-      E <- outer(sr, sc, "*")/n
-      Fj <- sum(sort((tab - E)^2/E, decreasing = TRUE))
+
+      tab <- countit(x = x, cutoff = b.ind[j], lvls = uniq)
+      before <- tab[, 1]
+      after  <- tab[, 2]
+
+      sr <- (before + after)/n
+      E1 <- sum(before)*sr
+      E2 <- sum(after)*sr
+      Fj <- sum((after - E2)^2 / E2) + sum((before - E1)^2 / E1)
+
       if(Fj > Fmax){
         Fmax <- Fj
         ind.max <- b.ind[j]+1
