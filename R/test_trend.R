@@ -7,20 +7,20 @@ options(cores=8)
 Rcpp::sourceCpp("R/countit.cpp")
 
 trend.break <- function(x, buffer=5, max.ind=100){
+  Fmax <- 0
+  ind.max <- NA_integer_
 
   x <- x[!is.na(x)]
   n <- length(x)
-  if(n-2*buffer < max.ind)
-    b.ind <- seq(buffer, n-buffer, by=1)
-  else
-    b.ind <- round(seq(buffer+1, n-buffer, length=100))
+  if(n < 2*buffer) return(list(Fmax = Fmax, ind.max = ind.max))
+
+  b.ind <- if(n-2*buffer < max.ind) seq(buffer, n-buffer, by=1) else round(seq(buffer+1, n-buffer, length=100))
   n.ind <- length(b.ind)
-  Fmax <- 0
 
   if(!is.numericish(x)){
     x <- as.character(x)
     uniq <- unique(x)
-
+    if(length(uniq) == 1) return(list(Fmax = Fmax, ind.max = ind.max))
     for(j in 1:n.ind){
 
       tab <- countit(x = x, cutoff = b.ind[j], lvls = uniq)
@@ -37,8 +37,8 @@ trend.break <- function(x, buffer=5, max.ind=100){
         ind.max <- b.ind[j]+1
       }
     }
-  }
-  else{
+  } else
+  {
     SSE0 <- sum((x-mean(x))^2)
     df0 <- n-1
     for(j in 1:n.ind){
@@ -56,40 +56,30 @@ trend.break <- function(x, buffer=5, max.ind=100){
       }
     }
   }
-  return(list(Fmax=Fmax, ind.max=ind.max))
+  list(Fmax=Fmax, ind.max=ind.max)
 }
 
-
-
-
-
-trend.perm.test <- function(x, nperm=1000, buffer=5, max.ind=100){
-
-  ans <- trend.break(x, buffer, max.ind)
-  F.vec <- rep(0,nperm)
-  for(k in 1:nperm){
-    x.k <- sample(x)
-    F.vec[k] <- trend.break(x.k, buffer, max.ind)$Fmax
-  }
-  pval <- (2*sum(F.vec > ans$Fmax)+1)/(2*nperm+1)
-  return(list(pval=pval, Fmax=ans$Fmax, ind.max=ans$ind.max))
-}
 
 
 trend.perm.test.par <- function(x, nperm=1000, buffer=5, max.ind=100){
   ans <- trend.break(x, buffer, max.ind)
-  F.vec <- rep(0,nperm)
-  F.vec <- foreach(k=1:nperm, .combine=c)%dopar%{
-    x.k <- sample(x)
-    trend.break(x.k, buffer, max.ind)$Fmax
-  }
-  pval <- (sum(F.vec > ans$Fmax)+1)/(nperm)
-  return(list(pval=pval, Fmax=ans$Fmax, ind.max=ans$ind.max))
+  out <- list(Fmax = ans$Fmax, ind.max = ans$ind.max)
+  if(!is.na(ans$ind.max))
+  {
+    F.vec <- rep(0,nperm)
+    F.vec <- foreach(k=1:nperm, .combine=c)%dopar%{
+      x.k <- sample(x)
+      trend.break(x.k, buffer, max.ind)$Fmax
+    }
+    out$pval <- (sum(F.vec > ans$Fmax)+1)/(nperm)
+  } else out$pval <- NA_real_
+  out
 }
 
 
 trend.test <- function(dat, nperm = 10, buffer = 5, max.ind = 100)
 {
+  dat <- fix.dates(dat)
   tmp <- purrr::map(dat, trend.perm.test.par, nperm = nperm, buffer = buffer, max.ind = max.ind)
   pvals <- purrr::map_dbl(tmp, "pval")
   tmp <- tmp[order(pvals)]

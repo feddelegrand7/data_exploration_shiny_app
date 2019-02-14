@@ -5,7 +5,7 @@ registerDoMC()
 options(cores=8)
 
 detect.mv.outliers.par <- function(X){
-  X <- as.data.frame(X)
+  X <- fix.dates(as.data.frame(X))
   p <- ncol(X)
   n <- nrow(X)
   X.NA <- is.na(X)

@@ -127,7 +127,14 @@ do_the_survplot <- function(time, event, x, dat)
 #################################################################################################################
 
 MIN.UNIQUE <- 10
-is.numericish <- function(x) (is.numeric(x) || inherits(x, "difftime") || is.Date(x)) && length(unique(x)) >= MIN.UNIQUE
+is.numericish <- function(x) (is.numeric(x) || inherits(x, "difftime") || is.Date(x) || inherits(x, "POSIXt")) && length(unique(x)) >= MIN.UNIQUE
+fix.dates <- function(dat)
+{
+  idx <- purrr::map_lgl(dat, ~ is.Date(.x) || inherits(.x, "POSIXt") || inherits(.x, "difftime"))
+  dat[idx] <- lapply(dat[idx], as.numeric)
+  dat
+}
+
 source("R/test_trend.R")
 source("R/univariate.R")
 source("R/outlier_detection.R")
