@@ -23,6 +23,7 @@ ui <- navbarPage(
       actionButton("mockstudy", "Use sample dataset..."),
       fileInput("inputfile", NULL, buttonLabel = "...or upload a dataset", multiple = FALSE),
       textOutput("inputfiletext"),
+      verbatimTextOutput("inputfilestr"),
       tags$a("NEWS file", href = "NEWS.md", target = "_blank", style = "bottom: 1vh; position: absolute;")
     ),
     mainPanel(
@@ -167,6 +168,10 @@ server <- function(input, output, session) {
     dat <- inputData()
     paste0("File of extension '", attr(dat, "extension"), "' detected: ",
            nrow(dat), " rows and ", ncol(dat), " columns.")
+  })
+
+  output$inputfilestr <- renderPrint({
+    utils:::str.default(inputData(), give.attr = FALSE)
   })
 
   ################## Update data viewer tab ##################
