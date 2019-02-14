@@ -252,7 +252,8 @@ server <- function(input, output, session) {
       geom_abline(slope = 1, intercept = 0, color = "red") +
       geom_point(show.legend = FALSE) +
       scale_color_manual(values = c("black", "red")) +
-      xlab("Theoretical Normal Quantiles") + ylab("Normal Quantiles of P-values")
+      xlab("Theoretical Normal Quantiles") + ylab("Normal Quantiles of P-values") +
+      ggtitle("QQ plot of Multivariate Outliers")
   })
 
   output$byobs.table <- renderTable({
