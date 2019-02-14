@@ -10,7 +10,8 @@ trend.break <- function(x, buffer=5, max.ind=100){
   Fmax <- 0
   ind.max <- NA_integer_
 
-  x <- x[!is.na(x)]
+  whch.NA <- which(x.nNA <- !is.na(x))
+  x <- x[x.nNA]
   n <- length(x)
   if(n < 2*buffer) return(list(Fmax = Fmax, ind.max = ind.max))
 
@@ -22,7 +23,6 @@ trend.break <- function(x, buffer=5, max.ind=100){
     uniq <- unique(x)
     if(length(uniq) == 1) return(list(Fmax = Fmax, ind.max = ind.max))
     for(j in 1:n.ind){
-
       tab <- countit(x = x, cutoff = b.ind[j], lvls = uniq)
       before <- tab[, 1]
       after  <- tab[, 2]
@@ -34,7 +34,7 @@ trend.break <- function(x, buffer=5, max.ind=100){
 
       if(Fj > Fmax){
         Fmax <- Fj
-        ind.max <- b.ind[j]+1
+        ind.max <- whch.NA[b.ind[j]]+1
       }
     }
   } else
@@ -52,7 +52,7 @@ trend.break <- function(x, buffer=5, max.ind=100){
       Fj <- ((SSE0-SSE1)/(df0-df1))/(SSE1/df1)
       if(Fj > Fmax){
         Fmax <- Fj
-        ind.max <- b.ind[j]+1
+        ind.max <- whch.NA[b.ind[j]]+1
       }
     }
   }
