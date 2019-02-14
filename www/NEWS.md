@@ -1,12 +1,18 @@
 News and Updates for this Shiny App:
 
-# v1.2.0.9000, 02/12/2019
+# v1.3.0, 02/14/2019
 
-- Added outlier cutoff to univariate tab.
+- Added outlier cutoff to univariate tab. (#23)
 
-- Added outlier cutoff to by-observation tab to color significant points.
+- Added outlier cutoff to by-observation tab to color significant points. (#25)
 
-- Sped up multivariate outlier detection and trend test.
+- Sped up multivariate outlier detection and trend test. (#17)
+
+- Added title to multivariate outlier plot. (#24)
+
+- Added data structure output. (#19)
+
+- Fixed some bugs with trend test. (#22)
 
 # v1.2.0, 12/20/2018
 
