@@ -39,16 +39,15 @@ trend.break <- function(x, buffer=5, max.ind=100){
     }
   }
   else{
-    xbar <- mean(x)
     SSE0 <- sum((x-mean(x))^2)
     df0 <- n-1
     for(j in 1:n.ind){
       x1 <- x[1:b.ind[j]]
       x2 <- x[(b.ind[j]+1):n]
-      foo1 <- lm.fit(cbind(1,1:b.ind[j]), x1)
-      foo2 <- lm.fit(cbind(1,(b.ind[j]+1):n), x2)
-      xhat1 <- c(foo1$fitted, foo2$fitted)
-      SSE1 <- sum((x-xhat1)^2)
+      foo1 <- .lm.fit(cbind(1,1:b.ind[j]), x1)
+      foo2 <- .lm.fit(cbind(1,(b.ind[j]+1):n), x2)
+      xres <- c(foo1$residuals, foo2$residuals)
+      SSE1 <- sum(xres^2)
       df1 <- n-4
       Fj <- ((SSE0-SSE1)/(df0-df1))/(SSE1/df1)
       if(Fj > Fmax){
