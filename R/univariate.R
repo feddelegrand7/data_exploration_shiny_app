@@ -35,7 +35,7 @@ univariate <- function(dat, cutoff)
     skewness = paste0(names(skew), " (", formatC(skew, digits = 3, format = "f"), ")"),
     excess.kurt = paste0(names(kurt), " (", formatC(kurt, digits = 3, format = "f"), ")"),
     outliers = paste0(names(outliers), " (", outliers, ", ", formatC(100*pct_outliers, digits = 1, format = "f"), "%)"),
-    trend.test = trend.test(dat, 10),
+    trend.test = trend.test(dat),
     stringsAsFactors = FALSE
   )
 }

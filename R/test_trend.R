@@ -77,7 +77,7 @@ trend.perm.test.par <- function(x, nperm=1000, buffer=5, max.ind=100){
 }
 
 
-trend.test <- function(dat, nperm = 10, buffer = 5, max.ind = 100)
+trend.test <- function(dat, nperm = 100, buffer = 5, max.ind = 100)
 {
   dat <- fix.dates(dat)
   tmp <- purrr::map(dat, trend.perm.test.par, nperm = nperm, buffer = buffer, max.ind = max.ind)
