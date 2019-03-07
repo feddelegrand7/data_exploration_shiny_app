@@ -136,7 +136,12 @@ server <- function(input, output, session) {
   })
 
   # eventReactive avoids it being called when the app loads
-  inputData <- eventReactive(whichData$fp,  read_my_file(whichData$fp))
+  inputData <- eventReactive(whichData$fp, {
+    validate(
+      need(!is.null(whichData$fp), "Please select a dataset.")
+    )
+    read_my_file(whichData$fp)
+  }, ignoreNULL = FALSE)
 
   columnNames <- reactive(colnames(inputData()))
 

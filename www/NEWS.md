@@ -4,6 +4,8 @@ News and Updates for this Shiny App:
 
 - Made plots skinnier and labels bolder.
 
+- Added a warning when no dataset is selected.
+
 # v1.3.0, 02/14/2019
 
 - Added outlier cutoff to univariate tab. (#23)
