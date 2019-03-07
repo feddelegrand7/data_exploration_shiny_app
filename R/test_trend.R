@@ -6,16 +6,17 @@ options(cores=8)
 
 Rcpp::sourceCpp("R/countit.cpp")
 
-trend.break <- function(x, buffer=5, max.ind=100){
+trend.break <- function(x, buffer.pct = 0.05, buffer = 5, max.ind=100){
   Fmax <- 0
   ind.max <- NA_integer_
 
   whch.NA <- which(x.nNA <- !is.na(x))
   x <- x[x.nNA]
   n <- length(x)
+  buffer <- max(buffer, round(buffer.pct * n))
   if(n < 2*buffer) return(list(Fmax = Fmax, ind.max = ind.max))
 
-  b.ind <- if(n-2*buffer < max.ind) seq(buffer, n-buffer, by=1) else round(seq(buffer+1, n-buffer, length=100))
+  b.ind <- if(n-2*buffer < max.ind) seq(from=buffer+1, to=n-buffer, by=1) else round(seq(from=buffer+1, to=n-buffer, length.out=max.ind))
   n.ind <- length(b.ind)
 
   if(!is.numericish(x)){
@@ -61,8 +62,8 @@ trend.break <- function(x, buffer=5, max.ind=100){
 
 
 
-trend.perm.test.par <- function(x, nperm=1000, buffer=5, max.ind=100){
-  ans <- trend.break(x, buffer, max.ind)
+trend.perm.test.par <- function(x, nperm=1000, buffer.pct = 0.05, buffer=5, max.ind=100){
+  ans <- trend.break(x, buffer.pct = buffer.pct, buffer = buffer, max.ind = max.ind)
   out <- list(Fmax = ans$Fmax, ind.max = ans$ind.max)
   if(!is.na(ans$ind.max))
   {
@@ -77,10 +78,10 @@ trend.perm.test.par <- function(x, nperm=1000, buffer=5, max.ind=100){
 }
 
 
-trend.test <- function(dat, nperm = 100, buffer = 5, max.ind = 100)
+trend.test <- function(dat, nperm = 100, buffer.pct = 0.05, buffer = 5, max.ind = 100)
 {
   dat <- fix.dates(dat)
-  tmp <- purrr::map(dat, trend.perm.test.par, nperm = nperm, buffer = buffer, max.ind = max.ind)
+  tmp <- purrr::map(dat, trend.perm.test.par, nperm = nperm, buffer.pct = buffer.pct, buffer = buffer, max.ind = max.ind)
   pvals <- purrr::map_dbl(tmp, "pval")
   tmp <- tmp[order(pvals)]
   arsenal::set_attr(paste0(

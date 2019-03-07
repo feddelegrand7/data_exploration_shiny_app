@@ -10,6 +10,8 @@ News and Updates for this Shiny App:
 
 - Changed trend test permutations to 100 instead of 10.
 
+- Changed trend test to ignore the first 5 percent or 5 observations, whichever is bigger.
+
 # v1.3.0, 02/14/2019
 
 - Added outlier cutoff to univariate tab. (#23)
