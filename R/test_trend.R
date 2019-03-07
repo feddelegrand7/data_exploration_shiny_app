@@ -86,7 +86,7 @@ trend.test <- function(dat, nperm = 100, buffer = 5, max.ind = 100)
   arsenal::set_attr(paste0(
     names(tmp), " (Observation=",
     purrr::map_dbl(tmp, "ind.max"), ", p-value=",
-    formatC(purrr::map_dbl(tmp, "pval"), digits = 3, format = "f"), ")"
+    formatC(purrr::map_dbl(tmp, "pval"), digits = 2, format = "f"), ")"
   ), "results", tmp)
 }
 

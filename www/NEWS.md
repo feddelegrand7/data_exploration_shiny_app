@@ -6,6 +6,10 @@ News and Updates for this Shiny App:
 
 - Added a warning when no dataset is selected.
 
+- Tweaked number of digits shown for the trend test.
+
+- Changed trend test permutations to 100 instead of 10.
+
 # v1.3.0, 02/14/2019
 
 - Added outlier cutoff to univariate tab. (#23)
