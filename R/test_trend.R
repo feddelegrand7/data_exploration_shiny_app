@@ -119,7 +119,7 @@ trend_plot <- function(var, dat, results)
   dat2 <- data.frame(y = dat[[var]], obs = seq_len(nrow(dat)), gp = c(rep("Before break", brk-1), rep("After break", nrow(dat) - brk + 1)))
   if(is.numericish(dat2$y))
   {
-    ggplot(dat2, aes(x = obs, y = y, group = gp)) +
+    p <- ggplot(dat2, aes(x = obs, y = y, group = gp)) +
       geom_point() +
       geom_smooth(method = "lm", se = FALSE, color = "red") +
       xlab("Observation Number") + ylab(var)
@@ -127,11 +127,12 @@ trend_plot <- function(var, dat, results)
   {
     dat2 <- as.data.frame(table(dat2[c("gp", "y")]))
     dat2$gp <- factor(dat2$gp, levels = c("Before break", "After break"))
-    ggplot(dat2, aes(x = gp, y = Freq, fill = y)) +
+    p <- ggplot(dat2, aes(x = gp, y = Freq, fill = y)) +
       geom_bar(position = "fill", stat = "identity") +
       xlab("") + ylab("Proportion") +
       scale_fill_discrete(name = var)
   }
+  p + theme(text = element_text(size = 15, face = "bold"))
 }
 
 

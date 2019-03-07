@@ -53,7 +53,7 @@ ui <- navbarPage(
               fluidRow(
                 column(4, selectInput("univ.trendvar", "Plot Trends for", choices = " ", multiple = FALSE, selectize = FALSE))
               ),
-              fluidRow(plotOutput("univ.trendplot"))
+              fluidRow(plotOutput("univ.trendplot", width = 600))
             ),
             tabPanel(
               "Pairwise",
@@ -61,7 +61,7 @@ ui <- navbarPage(
               fluidRow(tableOutput("pair.table")),
               fluidRow("Effective Number of Variables:"),
               fluidRow(tableOutput("pca.table")),
-              fluidRow(plotOutput("pca.screeplot"))
+              fluidRow(plotOutput("pca.screeplot", width = 600))
             ),
             tabPanel(
               "By Observation",
@@ -235,7 +235,9 @@ server <- function(input, output, session) {
       geom_line() +
       geom_point() +
       ggtitle("Scree Plot of PCAs") +
-      xlab("PCA") + ylab("Variance Explained")
+      xlab("PCA") + ylab("Variance Explained") +
+      theme(text = element_text(size = 15, face = "bold"))
+
   })
 
   by.obs.tab <- reactive({
@@ -258,7 +260,8 @@ server <- function(input, output, session) {
       geom_point(show.legend = FALSE) +
       scale_color_manual(values = c("black", "red")) +
       xlab("Theoretical Normal Quantiles") + ylab("Normal Quantiles of P-values") +
-      ggtitle("QQ plot of Multivariate Outliers")
+      ggtitle("QQ plot of Multivariate Outliers") +
+      theme(text = element_text(size = 15, face = "bold"))
   })
 
   output$byobs.table <- renderTable({

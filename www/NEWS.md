@@ -1,5 +1,9 @@
 News and Updates for this Shiny App:
 
+# v1.3.1, 03/07/2019
+
+- Made plots skinnier and labels bolder.
+
 # v1.3.0, 02/14/2019
 
 - Added outlier cutoff to univariate tab. (#23)
