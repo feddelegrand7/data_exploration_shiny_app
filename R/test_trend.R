@@ -70,9 +70,9 @@ trend.perm.test.par <- function(x, nperm=1000, buffer.pct = 0.05, buffer=5, max.
     F.vec <- rep(0,nperm)
     F.vec <- foreach(k=1:nperm, .combine=c)%dopar%{
       x.k <- sample(x)
-      trend.break(x.k, buffer, max.ind)$Fmax
+      trend.break(x.k, buffer.pct = buffer.pct, buffer = buffer, max.ind = max.ind)$Fmax
     }
-    out$pval <- (sum(F.vec > ans$Fmax)+1)/(nperm)
+    out$pval <- sum(F.vec > ans$Fmax)/nperm
   } else out$pval <- NA_real_
   out
 }
