@@ -1,6 +1,6 @@
 News and Updates for this Shiny App:
 
-# v1.3.1, 03/07/2019
+# v1.4.0, 03/07/2019
 
 - Made plots skinnier and labels bolder.
 
