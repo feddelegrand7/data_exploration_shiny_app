@@ -115,7 +115,12 @@ ui <- navbarPage(
       )
     )
   ),
-  tabPanel("Documentation", "This page is under development"),
+  tabPanel(
+    "Documentation",
+    "This page is under development",
+    p(style="font-size: 10px; margin-top: 75px;", paste0("App version ", read.dcf("DESCRIPTION")[1, "Version"]))
+
+  ),
   tabPanel("DISCLAIMER", mayoshiny::disclaimer())
 )
 
