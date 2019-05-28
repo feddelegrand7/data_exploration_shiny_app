@@ -1,5 +1,13 @@
 News and Updates for this Shiny App:
 
+# v1.5.0, 05/28/2019
+
+- Added documentation.
+
+# v1.4.1, 05/24/2019
+
+- Added the app version to the "Documentation" tab.
+
 # v1.4.0, 03/07/2019
 
 - Made plots skinnier and labels bolder.
