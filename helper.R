@@ -140,3 +140,14 @@ source("R/univariate.R")
 source("R/outlier_detection.R")
 source("R/pairwise.R")
 source("R/pca.R")
+
+
+#################################################################################################################
+
+documentation <- "R/documentation.md" %>%
+  readLines() %>%
+  gsub("`(.*?)`", "<code>\\1</code>", x = .) %>%
+  gsub("^## (.*)", "<h2>\\1</h2>", x = .) %>%
+  gsub("^([^< ].*)", "<p>\\1</p>", x = .) %>%
+  gsub("\\*\\*(.*?)\\*\\*", "<strong>\\1</strong>", x = .) %>%
+  paste0(collapse = "")

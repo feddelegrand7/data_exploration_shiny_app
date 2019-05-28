@@ -117,7 +117,7 @@ ui <- navbarPage(
   ),
   tabPanel(
     "Documentation",
-    "This page is under development",
+    HTML(documentation),
     p(style="font-size: 10px; margin-top: 75px;", paste0("App version ", read.dcf("DESCRIPTION")[1, "Version"]))
 
   ),
