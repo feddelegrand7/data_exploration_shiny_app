@@ -37,9 +37,13 @@ ui <- navbarPage(
           "Summary Statistics",
           fluidRow(
             column(4, selectInput("tableby.y", "By-Variable", choices = " ", multiple = FALSE, selectize = FALSE)),
-            column(4, selectInput("tableby.x", "X-Variables", choices = " ", multiple = TRUE, selectize = FALSE))
+            column(4, selectInput("tableby.x", "X-Variables", choices = " ", multiple = TRUE, selectize = FALSE)),
+            column(4, selectInput("tableby.strata", "Strata Variable", choices = " ", multiple = FALSE, selectize = FALSE))
           ),
-          tableOutput("tableby")
+          fluidRow(tableOutput("tableby")),
+          fluidRow(
+            downloadButton("tableby.downloadHTML", "Download HTML"), downloadButton("tableby.downloadPDF", "Download PDF")
+          )
         ),
         tabPanel(
           "Data Quality",
@@ -163,6 +167,7 @@ server <- function(input, output, session) {
     }
     updateSelectInput(session, "tableby.y", choices = cn())
     updateSelectInput(session, "tableby.x", choices = cn())
+    updateSelectInput(session, "tableby.strata", choices = cn())
     updateSelectInput(session, "univ.trendvar", choices = cn())
     updateSelectInput(session, "ggplot.y", choices = cn())
     updateSelectInput(session, "ggplot.x", choices = cn())
@@ -194,9 +199,18 @@ server <- function(input, output, session) {
 
   ################## Update summary statistics tab ##################
 
+  tableby_object <- reactive(do_the_tableby(input$tableby.y, input$tableby.x, input$tableby.strata, isolate(inputData())))
+
   output$tableby <- renderTable({
-    do_the_tableby(input$tableby.y, input$tableby.x, isolate(inputData()))
+    as.data.frame(summary(tableby_object(), text = TRUE, term.name = TRUE))
   })
+
+  output$tableby.downloadHTML <- downloadHandler(
+    filename = function() "tableby.html", content = function(file) write2html(tableby_object(), file = file, quiet = TRUE, term.name = TRUE)
+  )
+  output$tableby.downloadPDF <- downloadHandler(
+    filename = function() "tableby.pdf", content = function(file) write2pdf(tableby_object(), file = file, quiet = TRUE, term.name = TRUE)
+  )
 
   ################## Update data quality tab ##################
 

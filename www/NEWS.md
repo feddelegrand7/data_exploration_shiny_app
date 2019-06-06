@@ -6,6 +6,10 @@ News and Updates for this Shiny App:
 
 - Made plots interactive. (#21)
 
+- Allowed for tableby download. (#1)
+
+- Allowed for strata term in tableby output. 
+
 # v1.5.1, 06/06/2019
 
 - Updated documentation.

@@ -45,7 +45,7 @@ count_unique <- function(vars, dat)
   map_int(dat[vars], function(x) length(unique(x)))
 }
 
-do_the_tableby <- function(y, x, dat)
+do_the_tableby <- function(y, x, strat, dat)
 {
   x <- x[x != " "]
   validate(
@@ -53,7 +53,9 @@ do_the_tableby <- function(y, x, dat)
     need(y == " " || count_unique(y, dat) <= 20, "This tab only supports by-variables with <= 20 unique levels."),
     need(!identical(y, x), "Sorry, the x-variables and by-variable can't be identical.")
   )
-  as.data.frame(summary(tableby(formulize(y, x), data = dat), text = TRUE))
+  Call <- call("tableby", formula = quote(formulize(y, x)), data = quote(dat))
+  if(strat != " ") Call$strata <- as.name(strat)
+  eval(Call, environment())
 }
 
 #################################################################################################################
