@@ -36,14 +36,14 @@ ui <- navbarPage(
         tabPanel(
           "Summary Statistics",
           fluidRow(
+            downloadButton("tableby.downloadHTML", "Download HTML") #, downloadButton("tableby.downloadPDF", "Download PDF")
+          ),
+          fluidRow(
             column(4, selectInput("tableby.y", "By-Variable", choices = " ", multiple = FALSE, selectize = FALSE)),
             column(4, selectInput("tableby.x", "X-Variables", choices = " ", multiple = TRUE, selectize = FALSE)),
             column(4, selectInput("tableby.strata", "Strata Variable", choices = " ", multiple = FALSE, selectize = FALSE))
           ),
-          fluidRow(tableOutput("tableby")),
-          fluidRow(
-            downloadButton("tableby.downloadHTML", "Download HTML"), downloadButton("tableby.downloadPDF", "Download PDF")
-          )
+          fluidRow(tableOutput("tableby"))
         ),
         tabPanel(
           "Data Quality",
@@ -206,11 +206,12 @@ server <- function(input, output, session) {
   })
 
   output$tableby.downloadHTML <- downloadHandler(
-    filename = function() "tableby.html", content = function(file) write2html(tableby_object(), file = file, quiet = TRUE, term.name = TRUE)
+    filename = function() "tableby.html",
+    content = function(file) write2html(list(yaml(pagetitle = "Tableby Output"), tableby_object()), file = file, quiet = TRUE, term.name = TRUE)
   )
-  output$tableby.downloadPDF <- downloadHandler(
-    filename = function() "tableby.pdf", content = function(file) write2pdf(tableby_object(), file = file, quiet = TRUE, term.name = TRUE)
-  )
+  # output$tableby.downloadPDF <- downloadHandler(
+  #   filename = function() "tableby.pdf", content = function(file) write2pdf(tableby_object(), file = file, quiet = TRUE, term.name = TRUE)
+  # )
 
   ################## Update data quality tab ##################
 
