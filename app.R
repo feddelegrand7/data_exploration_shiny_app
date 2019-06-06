@@ -101,7 +101,8 @@ ui <- navbarPage(
               selectInput("ggplot.scale_x", "X-Scale Transformation", choices = SCALETYPES("x"), multiple = FALSE, selectize = FALSE)
             )
           ),
-          plotOutput("ggplotplot")
+          shinycssloaders::withSpinner(plotly::plotlyOutput("ggplotplot"), color = "#003da5"),
+          p("To download this plot, hit the button on the toolbar above the plot.")
         ),
         tabPanel(
           "Survival Analysis",
@@ -286,8 +287,8 @@ server <- function(input, output, session) {
 
   ################## Update plotting tab ##################
 
-  output$ggplotplot <- renderPlot({
-    do_the_ggplot(
+  output$ggplotplot <- plotly::renderPlotly({
+    plotly::ggplotly(do_the_ggplot(
       y = input$ggplot.y,
       x = input$ggplot.x,
       color = input$ggplot.color,
@@ -297,7 +298,7 @@ server <- function(input, output, session) {
       scale_x = input$ggplot.scale_x,
       type = input$ggplot.plottype,
       dat = isolate(inputData())
-    )
+    ))
   })
 
   ################## Update survival tab ##################

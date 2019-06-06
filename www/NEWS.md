@@ -4,6 +4,8 @@ News and Updates for this Shiny App:
 
 - Updated documentation.
 
+- Made plots interactive. (#21)
+
 # v1.5.1, 06/06/2019
 
 - Updated documentation.
