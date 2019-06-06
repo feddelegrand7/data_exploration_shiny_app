@@ -1,6 +1,6 @@
 News and Updates for this Shiny App:
 
-# v1.5.1.9000, 06/06/2019
+# v1.6.0, 06/06/2019
 
 - Updated documentation.
 

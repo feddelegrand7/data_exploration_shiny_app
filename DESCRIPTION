@@ -1,6 +1,6 @@
 Title: Data Exploration App
 URL: data_exploration
-Version: 1.5.1
+Version: 1.6.0
 Date: 2019-06-06
 Description: A point-and-click GUI to perform basic data exploration,
     leveraging the reporting capabilities of the `arsenal` package and the plotting capabilities of the
