@@ -10,6 +10,8 @@ News and Updates for this Shiny App:
 
 - Allowed for strata term in tableby output. 
 
+- Added link to rtools.mayo.edu.
+
 # v1.5.1, 06/06/2019
 
 - Updated documentation.
