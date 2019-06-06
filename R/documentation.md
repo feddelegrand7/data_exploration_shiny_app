@@ -45,7 +45,7 @@ This section introduces the univariate data quality checks of your dataset. The 
   <figcaption>Figure 5: Pairwise Interface before Loading Sample Data</figcaption>
 </figure>
 
-Pairwise correlations on the variables are computed, and the top N are displayed (where N is determined by user input). Pairwise correlations of missing-ness indicators are also computed and displayed for the top N variable pairs. PCA is then used to calculate how many redundant variables there are. The table and plot and display the number of components that explain 95%, 97.5%, and 99% of the variability.
+Pairwise correlations on the variables are computed, and the top N are displayed (where N is determined by user input). Pairwise correlations of missingness indicators are also computed and displayed for the top N variable pairs. PCA is then used to calculate how many redundant variables there are. The table and plot and display the number of components that explain 95%, 97.5%, and 99% of the variability.
 
 <figure>
   <img src="figure6.png" alt="Pairwise results">
