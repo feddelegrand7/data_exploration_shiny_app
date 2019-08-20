@@ -5,6 +5,7 @@ library(tidyverse)
 library(arsenal)
 library(survival)
 library(ggfortify)
+library(dq)
 source("helper.R")
 
 # increase max upload file size
@@ -216,22 +217,27 @@ server <- function(input, output, session) {
   ################## Update data quality tab ##################
 
   univ.tab <- reactive({
-    univariate(inputData(), input$univ.cutoff)
+    dq_univariate(inputData(), input$univ.cutoff)
   })
 
   output$univ.table <- renderTable({
     validate(
       need(is.numeric(input$nshow1) && input$nshow1 > 0, "Please enter a number greater than 0.")
     )
-    head(setNames(univ.tab(), c("Missings (count, %)", "Skewness", "Excess Kurtosis", "Outliers (count, %)", "Trend Test")), input$nshow1)
+    head(setNames(format(univ.tab(), digits.pval = 2), c("Missings (count, %)", "Skewness", "Excess Kurtosis", "Outliers (count, %)", "Trend Test")),
+         input$nshow1)
   })
 
   output$univ.trendplot <- renderPlot({
-    trend_plot(input$univ.trendvar, inputData(), attr(univ.tab()$trend.test, "results"))
+    validate(
+      need(input$univ.trendvar != " ", "Please select a variable.")
+    )
+
+    plot(univ.tab(), variable = input$univ.trendvar, data = inputData())
   })
 
   pair.tab <- reactive({
-    pairwise(inputData())
+    format(dq_pairwise(inputData()))
   })
 
   output$pair.table <- renderTable({
@@ -242,9 +248,8 @@ server <- function(input, output, session) {
   })
 
   pcas <- reactive({
-    tmp <- get_eigen(inputData())
+    tmp <- dq_pca(inputData())
     cumsum(tmp)/sum(tmp)
-
   })
 
   output$pca.table <- renderTable({
@@ -271,33 +276,18 @@ server <- function(input, output, session) {
     validate(
       need(nrow(inputData()) < 10000, "Sorry, this data quality metric is limited to datasets with less than 10,000 rows.")
     )
-    tmp <- data.frame(
-      Observation = 1:nrow(inputData()),
-      p.value = detect.mv.outliers.par(inputData())
-    )
-    tmp[order(tmp$p.value), ]
+    dq_multivariate(inputData())
   })
 
   output$byobs.plot <- renderPlot({
-    q <- qnorm(p <- by.obs.tab()$p.value)
-    expected <- qnorm(ppoints(nrow(by.obs.tab())))
-    ggplot(data.frame(x = expected, y = q, color = factor(p < input$byobs.cutoff, levels = c(FALSE, TRUE))),
-           aes(x = x, y = y, color = color)) +
-      geom_abline(slope = 1, intercept = 0, color = "red") +
-      geom_point(show.legend = FALSE) +
-      scale_color_manual(values = c("black", "red")) +
-      xlab("Theoretical Normal Quantiles") + ylab("Normal Quantiles of P-values") +
-      ggtitle("QQ plot of Multivariate Outliers") +
-      theme(text = element_text(size = 15, face = "bold"))
+    plot(by.obs.tab(), cutoff = input$byobs.cutoff)
   })
 
   output$byobs.table <- renderTable({
     validate(
       need(is.numeric(input$nshow3) && input$nshow3 > 0, "Please enter a number greater than 0.")
     )
-    tmp <- by.obs.tab()
-    tmp$p.value <- formatC(tmp$p.value, digits = 4, format = "f")
-    head(tmp, input$nshow3)
+    head(format(by.obs.tab()), input$nshow3)
   })
 
   ################## Update plotting tab ##################

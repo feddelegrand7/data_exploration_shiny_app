@@ -1,7 +1,7 @@
 # The Data Exploration App
 
 The point of this R Shiny app is to provide a point-and-click GUI to perform basic data exploration,
-leveraging the reporting capabilities of the `arsenal` package and the plotting capabilities of the
+leveraging the reporting capabilities of the `arsenal` and `dq` packages and the plotting capabilities of the
 `ggplot2` package. It is available at https://rtools.mayo.edu/data_exploration/.
 
 This project is actively under development, and any contributions are welcome on GitHub. For news,
