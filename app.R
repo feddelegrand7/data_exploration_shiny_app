@@ -224,8 +224,7 @@ server <- function(input, output, session) {
     validate(
       need(is.numeric(input$nshow1) && input$nshow1 > 0, "Please enter a number greater than 0.")
     )
-    head(setNames(format(univ.tab(), digits.pval = 2), c("Missings (count, %)", "Skewness", "Excess Kurtosis", "Outliers (count, %)", "Trend Test")),
-         input$nshow1)
+    summary(univ.tab(), digits.pval = 2, n = input$nshow1)
   })
 
   output$univ.trendplot <- renderPlot({
@@ -237,38 +236,26 @@ server <- function(input, output, session) {
   })
 
   pair.tab <- reactive({
-    format(dq_pairwise(inputData()))
+    dq_pairwise(inputData())
   })
 
   output$pair.table <- renderTable({
     validate(
       need(is.numeric(input$nshow2) && input$nshow2 > 0, "Please enter a number greater than 0.")
     )
-    head(setNames(pair.tab(), c("Pairwise Correlation", "Pairwise Correlation of Missings")), input$nshow2)
+    summary(pair.tab(), input$nshow2)
   })
 
   pcas <- reactive({
-    tmp <- dq_pca(inputData())
-    cumsum(tmp)/sum(tmp)
+    dq_pca(inputData())
   })
 
   output$pca.table <- renderTable({
-    cuts <- c(0.95, 0.975, 0.99)
-    eig <- pcas()
-    out <- lapply(cuts, function(cutoff) {
-      min(which(cutoff <= eig))
-    })
-    setNames(as.data.frame(out), paste0(cuts*100, "%"))
+    summary(pcas())
   })
 
   output$pca.screeplot <- renderPlot({
-    dat <- data.frame(x = seq_along(pcas()), y = pcas())
-    ggplot(dat, aes(x = x, y = y)) +
-      geom_line() +
-      geom_point() +
-      ggtitle("Scree Plot of PCAs") +
-      xlab("PCA") + ylab("Variance Explained") +
-      theme(text = element_text(size = 15, face = "bold"))
+    plot(pcas())
 
   })
 
@@ -287,7 +274,7 @@ server <- function(input, output, session) {
     validate(
       need(is.numeric(input$nshow3) && input$nshow3 > 0, "Please enter a number greater than 0.")
     )
-    head(format(by.obs.tab()), input$nshow3)
+    summary(by.obs.tab(), input$nshow3)
   })
 
   ################## Update plotting tab ##################

@@ -1,5 +1,9 @@
 News and Updates for this Shiny App:
 
+# v2.0.0.9000, 09/12/2019
+
+- Updated code based on `dq` updates.
+
 # v2.0.0, 08/20/2019
 
 - Used `dq` package.
